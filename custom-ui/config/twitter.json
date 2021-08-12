@@ -1,0 +1,56 @@
+{
+    "video" :
+    {
+        "name": "TwitterVideo",
+        "in_channel_id": 1,
+        "sync_group_id": 1,
+        "bitrate": {
+        "value": 2500
+        },
+        "latency_mode": {
+        "value": "HIGH"
+        },
+        "bitrate_mode": {
+        "value": "variable"
+        },
+        "keyframe_interval": {
+        "interval": 90,
+        "unit": "FRAMES"
+        },
+        "scaling_resolution": {
+        "value": "RES_1280X720"
+        },
+        "limit_to_30_fps": true,
+        "klv_timestamp_enabled": true,
+        "codec": {
+            "value": "H264",
+            "h264": {
+                "profile": {
+                "value": "PROFILE_MAIN"
+                }
+            },
+            "h265": {
+                "profile": {
+                "value": "PROFILE_MAIN"
+                }
+            }
+        }
+    },
+    "audio": 
+    {
+        "name": "TwitterAudio",
+        "in_channel_id": 1,
+        "codec": {
+            "value": "mpeg4_aac"
+        },
+        "mix_mode": {
+            "value": "STEREO"
+        },
+        "bitrate": {
+            "value": "128"
+        },
+        "bitrate_mode": {
+            "value": "variable"
+        }
+    }
+}

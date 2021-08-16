@@ -1,8 +1,18 @@
+#################################################################################
+#
+# videon_restful.py
+#
+# This is a simple set of helper functions to make it easier to call the LiveEdge 
+# Compute RESTful APIs on the EdgeCaster device. 
+# 
+#################################################################################
+
 import requests
 import json
 import sys
 import os
 
+# Videon API RESTful endpoints.
 system_url = 'http://{}:2020/v2/system'
 in_channels_url = 'http://{}:2020/v2/in_channels'
 in_channel_config_url = 'http://{}:2020/v2/in_channels/{}'
@@ -29,6 +39,7 @@ reset_settings_cgi = 'http://{}/cgi-bin/reset_settings.cgi'
 
 # GETs
 
+# Helper function for forming JSON output
 def get_json(url):
     r = requests.get(url)
     if r.status_code != requests.codes.ok:
@@ -38,7 +49,6 @@ def get_json(url):
 
 
 # SYSTEM
-
 def get_system_properties(ip):
     url = system_url.format(ip)
     return get_json(url)
@@ -100,7 +110,7 @@ def get_vid_encoders(ip):
 def add_vid_encoder(ip):
     url = vid_encoders_url.format(ip)
     r = requests.post(url)
-    return r
+    return r.json()
 
 
 def get_vid_encoders_config(ip, vid_encoder_id):
@@ -115,7 +125,7 @@ def put_vid_encoders_config(ip, vid_encoder_id, json_data):
     except requests.exceptions.Timeout:
         pass
     if put_data is not None:
-        ret = str(put_data.status_code)
+        ret = {str(put_data.status_code) : put_data.text}
     else:
         ret = "Finished with unknown result"
     return ret
@@ -130,7 +140,7 @@ def get_aud_encoders(ip):
 def add_aud_encoder(ip):
     url = aud_encoders_url.format(ip)
     r = requests.post(url)
-    return r
+    return r.json()
 
 
 def get_aud_encoders_config(ip, aud_encoder_id):

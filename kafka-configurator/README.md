@@ -3,7 +3,7 @@ This simple code example demonstrates how to remotely command and control the Ed
 
 Using a message queue in this way allows for asynchronous communication and event-driven interactions, both between a central administrative interface and amongst individual devices. 
 
-This example assumes you have a Kafka broker running on your network that receives configuration messages from a central administrative system. Implementing that is left as an exercise for the reader.
+This example assumes you have a Kafka broker running on your network that receives configuration messages from a central administrative system. If you don't already have access to a working Kafka broker, you can implement a simple broker and client in just a few minutes on your local machine by [following the Apache Kafka Quickstart](https://kafka.apache.org/quickstart). 
 
 ## Usage
 Download the `videon_restful.py` helper library from this repository and place it in the same directory as this script. You'll need to run a Kafka broker and client to send messages to the queues this example listens on. Make sure you update the `kafka_server' variable with the address of your Kafka server.

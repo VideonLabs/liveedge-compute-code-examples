@@ -9,7 +9,7 @@ app.use(restify.plugins.queryParser());
 
 const LISTENING_PORT = process.env.LISTENING_PORT;
 
-var videon_ip = "192.168.86.24";
+var videon_ip = process.env.HOST_IP_ADDRESS;
 var videon_baseurl = "http://" + videon_ip +":2020";
 
 //This endpoint will simply respond with a static message to confirm this server is running

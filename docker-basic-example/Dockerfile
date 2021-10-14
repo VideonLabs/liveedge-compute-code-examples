@@ -25,6 +25,10 @@ RUN apt-get install -y tzdata
 # This environment variable is used by our Node script to determine the port our server run on
 ENV LISTENING_PORT=8888
 
+# There is no platform independent way to easily get the host address to access the LiveEdge Comput API
+# However, this is the default used by Docker in Linux, so we'll set it here. 
+ENV HOST_IP_ADDRESS="172.17.0.1"
+
 # Our application requires these three programs to run
 RUN apt-get install -y npm nodejs
 

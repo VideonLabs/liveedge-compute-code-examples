@@ -28,7 +28,7 @@ In order to sync the recorded video, we map the local volume where LiveEdge Comp
 ```
 docker run --restart unless-stopped --name rclone-test -v \
  /data/local/internal_storage/savedvideo/Media/:/app/media \
- rclone-monitor &
+ rclone-aws-sync &
 ```
 
 The `--restart unless-stopped` flag should ensure this container is restarted any time the device restarts and will continue to run in the background until stopped using `docker stop`. 

@@ -8,9 +8,9 @@ RUN groupadd -g 3004 net_raw && usermod -G net_raw root
 # You can obtain your AWS Access Key ID and secret either from
 # your IAM settings on AWS, or from your ~/.aws/credentials file.
 
-ENV AWS_ACCESS_KEY_ID=AKIAYQBPQFR2C7K2EUXW
-ENV AWS_SECRET_ACCESS_KEY=sRyOymWF4L6Nq5dRLjNVWyA+yYuxRl/7jcKQsjJE
-ENV SYNC_BUCKET=videon-rz/sync
+ENV AWS_ACCESS_KEY_ID=[REPLACE WITH AWS ACCESS KEY]]
+ENV AWS_SECRET_ACCESS_KEY=[REPLACE WITH AWS SECRET KEY]
+ENV SYNC_BUCKET=[REPLACE WITH the FOLDER NAME IN YOUR S3 Bucket]
 
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y inotify-tools curl unzip

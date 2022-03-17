@@ -47,7 +47,8 @@ previewEnabled = False
 # for Twitter, one for Twitch, one for Faceboo, etc.). See the files in the `config` directory for the 
 # format. 
 services = [
-    "twitter.json",
+    "youtube.json",
+    "facebook.json",
     "twitch.json"
 ]
 
@@ -80,7 +81,7 @@ for service in services:
 # for each stream type. For this use case, we stored the values recommended by the stream distributors
 # in the external configuration files we just loaded. 
 #
-# If this is the first time this application is running, then we need to create those profile on the device. 
+# If this is the first time this application is running, then we need to create those profiles on the device. 
 
 def updateProfiles():
     vid_encoders = {}

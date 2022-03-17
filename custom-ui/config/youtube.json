@@ -1,12 +1,12 @@
 {
-    "name": "Twitter Stream",
+    "name": "YouTube Live",
     "video" :
     {
-        "name": "TwitterVideo",
+        "name": "YouTubeLiveVideo",
         "in_channel_id": 1,
         "sync_group_id": 1,
         "bitrate": {
-        "value": 2500
+        "value": 4500
         },
         "latency_mode": {
         "value": "HIGH"
@@ -15,13 +15,13 @@
         "value": "variable"
         },
         "keyframe_interval": {
-        "interval": 90,
-        "unit": "FRAMES"
+        "interval": 2000,
+        "unit": "MILLISECONDS"
         },
         "scaling_resolution": {
-        "value": "RES_1280X720"
+        "value": "RES_1920X1080"
         },
-        "limit_to_30_fps": true,
+        "limit_to_30_fps": false,
         "klv_timestamp_enabled": true,
         "codec": {
             "value": "H264",
@@ -39,7 +39,7 @@
     },
     "audio": 
     {
-        "name": "TwitterAudio",
+        "name": "YouTubeLiveAudio",
         "in_channel_id": 1,
         "codec": {
             "value": "mpeg4_aac"

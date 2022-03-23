@@ -147,17 +147,13 @@ def configStream(id, data):
 
     stream_obj["audio_sources"]["audio_source_ids"] = [profile["audio_id"]]
     stream_obj["video_sources"]["video_source_ids"] = [profile["video_id"]]
-    stream_obj["output_type"]["rtmp"]["service"]["data"] = '{"url": ' + rtmp_url + '}'
+    stream_obj["output_type"]["rtmp"]["service"]["data"] = "{'url': '" + rtmp_url + "'}"
 
-    videon_restful.put_out_streams_configs(videon_ip, id, stream_obj)
-    videon_restful.get_out_streams_configs(videon_ip, id)
+    outRes = videon_restful.put_out_streams_configs(videon_ip, id, stream_obj)
 
     readyStreams[id] = stream_obj
 
-    return_code = '200'
-    return_msg = 'OK'
-
-    return (return_code, return_msg)
+    return (outRes["return_code"], outRes["return_body"])
 
 # We need to run this every time we want to update the state from the device. This builds the
 # master "currState" object we use as a convenience method to work with the browser front end.
@@ -250,10 +246,12 @@ def serve_static(filepath):
 @app.route('/streams/<id:int>', method=['POST'])
 def configure_stream(id):
     # Configures the given stream
+    print("Configuring stream ID: ", id)
     try:
         data = request.json
         (r_status, r_msg) = configStream(id, data)
-        return bottle.HTTPResponse(status=201)
+        response.status = "201 Updated"
+        return
     except ValueError:
         print("Invalid JSON:\n")
         print(request.body.read())
@@ -274,10 +272,12 @@ def goLive():
             readyStreams[id]["enable"] = False
         else:
             readyStreams[id]["enable"] = True
+        print(readyStreams[id])
         res = videon_restful.put_out_streams_configs(videon_ip, id, readyStreams[id])
-        print(res)
-    
-    return "Hello!"
+        print("Reponse: ", res)
+        if res["return_code"] != 200:
+            response.status = res["return_code"] + ' ' + res["return_body"]
+            return dict({"message": res["return_body"]})
 
 app.install(EnableCors())
 

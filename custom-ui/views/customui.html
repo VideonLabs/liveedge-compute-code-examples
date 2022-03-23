@@ -348,7 +348,7 @@ building library - is supported.
       stream["stream_key"] = $("#output_id_" + id + "_key").val();
       stream["stream_url"] = $("#output_id_" + id + "_url").val();
 
-      console.log(stream);
+      console.log(JSON.stringify(stream));
 
       $.ajax({
         url: "/streams/" + id,

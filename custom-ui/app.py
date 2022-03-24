@@ -148,6 +148,7 @@ def configStream(id, data):
     stream_obj["audio_sources"]["audio_source_ids"] = [profile["audio_id"]]
     stream_obj["video_sources"]["video_source_ids"] = [profile["video_id"]]
     stream_obj["output_type"]["rtmp"]["service"]["data"] = "{'url': '" + rtmp_url + "'}"
+    stream_obj["output_type"]["rtmp"]["service"]["value"] = "generic"
 
     outRes = videon_restful.put_out_streams_configs(videon_ip, id, stream_obj)
 

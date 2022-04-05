@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <title>AWS Rekognition - Label Detection</title>
+  <style>
+    body {
+      margin: 0px;
+      padding: 0px;
+      font-size: 12pt;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    }
+
+    #header {
+      margin: 0px;
+      padding: 25px 25px 25px 25px;
+      background-color: #000000;
+      color: #FFFFFF;
+    }
+
+    #header h1 {
+      font-size: 36pt;
+      margin: 0px;
+    }
+
+    #hero {
+      margin: 25px 0px 0px 0px;
+      text-align: center;
+    }
+
+    #vid_preview {
+      text-align: center;
+    }
+
+    #vid_preview_box {
+      margin: 0px auto;
+      width: 640px;
+    }
+
+    #hero:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+    #stream_setup {
+      position: relative;
+    }
+
+    .container {
+      position: relative;
+    }
+
+    #stream_setup {
+      margin: 0px auto;
+      width: 60%;
+    }
+
+    .select-button {
+      width: 200px;
+      height: 200px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 50%;
+      font-size: 20pt;
+      font-weight: bold;
+      color: #FFFFFF;
+      margin: 0px;
+      position: relative;
+    }
+
+    .select-button-text {
+      margin: 0;
+      position: absolute;  
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+
+    .select-button-ready {
+      background: #00CC00;
+      background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #00CC00), color-stop(100%, #00FF00));
+      background-image: -moz-gradient(linear, left top, left bottom, color-stop(0%, #00CC00), color-stop(100%, #00FF00));
+      box-shadow: 0 15px #00CC00;
+    }
+
+    .select-button-default {
+      background: #0088ff;
+      background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #0088ff), color-stop(100%, #0099ff));
+      background-image: -moz-gradient(linear, left top, left bottom, color-stop(0%, #0088ff), color-stop(100%, #0099ff));
+      box-shadow: 0 15px #007ccf;
+    }
+
+    .select-button-active {
+      background: #CC0000;
+      background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #CC0000), color-stop(100%, #FF0000));
+      background-image: -moz-gradient(linear, left top, left bottom, color-stop(0%, #CC0000), color-stop(100%, #FF0000));
+      box-shadow: 0 15px #CC0000;
+    }
+
+    .select-button:active {
+      box-shadow: 0 0 #e24f4f;
+      -webkit-transform: translate(0px, 15px);
+      -moz-transform: translate(0px, 15px);
+      -ms-transform: translate(0px, 15px);
+      -o-transform: translate(0px, 15px);
+      -webkit-transition: 0.1s all ease-out;
+      -moz-transition: 0.1s all ease-out;
+      -ms-transition: 0.1s all ease-out;
+      -o-transition: 0.1s all ease-out;
+      transition: 0.1s all ease-out;
+    }
+    .stream-saved {
+      background-color: #fdb515;
+    }
+    .unsaved {
+      background-color: #005500;
+    }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <h1>Label Detection with AWS Rekognition</h1>
+  </div>
+  <div id="hero">
+    <div id="vid_preview">
+      <img id="prev_jpg" name="prev_jpg" src='tv-test-pattern.png' width="640" height="360" /><br />
+      <div id="preview_details"></div>
+    </div>
+  </div>
+  
+  <script>
+    var device_ip = '';
+    var device_url = '';
+
+
+    //Handling the preview video
+    function previewVid() {
+      var url = '/bounded/?' + Date.now();
+      $("#prev_jpg").attr('src', url);
+    }
+
+    $( document ).ready( function() {
+      //Set up the default image on the preview
+      $('#prev_jpg').on("error", function() {
+        $(this).attr('src', 'tv-test-pattern.png');
+      });
+      
+      // We make a call to AWS every time we load a new image, so let's keep it reasonable at 1s per pull.
+      setInterval(previewVid, 1000);
+    });
+  </script>
+</body>

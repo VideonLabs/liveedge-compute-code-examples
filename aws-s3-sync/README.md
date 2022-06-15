@@ -1,6 +1,6 @@
 # Sync Recorded Video With AWS S3 (And Other Cloud Storage Providers)
 
-In addition to streaming live video, devices empowered by LiveEdge Compute can record video and store it on the deive for later retrieval. This also allows you to leverage LiveEdge Compute capabilities to automatically sync that recorded video with any cloud storage provider you choose. 
+In addition to streaming live video, devices empowered by LiveEdge Compute can record video and store it on the device for later retrieval. This also allows you to leverage LiveEdge Compute capabilities to automatically sync that recorded video with any cloud storage provider you choose. 
 
 This Docker image uses `rclone` to easily sync your local device storage with a number of cloud providers. To use it, you must have LiveEdge Compute enabled on your device and have [set up access to it via adb](https://support.videonlabs.com/hc/en-us/articles/4403731257491-Getting-Started-with-the-LiveEdge-Compute-Toolkit). You should also have a basic understanding of [how Docker works with LiveEdge Compute](https://support.videonlabs.com/hc/en-us/articles/4408583092115-Using-Docker-with-LiveEdge-Compute).
 

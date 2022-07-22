@@ -35,7 +35,7 @@ def handleResponse(response):
     # Only reports an error if we get anything other than an OK error.
     ret = False
     if((int(response.status_code/100) % 10) != 2):
-        ret = {"err_code": res.status_code, "err_message": + res.reason + '; ' + res.text}
+        ret = {"err_code": res.status_code, "err_message": res.reason + '; ' + res.text}
     return ret
 
 def setupScte(device_ip, duration):
@@ -101,46 +101,46 @@ for event in dev.read_loop():
 	if event.type == ecodes.EV_KEY:
 		keyEvent = str(categorize(event))
 		if "(KEY_1), up" in keyEvent:
+            print("Key 1 Hit!")
 			duration = 15
 			scteID=setupScte(device_ip, duration)
 			res = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scteID) + '/action/insert_splice', headers={"Content-Type": "application/json"}, json={})
 			print(res)
 			err = handleResponse(res)
 			if(err != False):
-				print("Error setting splice: " + err.err_code + ': ' + err.err_message)
+				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
 				exit
-			print("Key 1 Hit!!!")
 		if "(KEY_2), up" in keyEvent:
+            print("Key 2 Hit!")
 			duration = 30
 			scteID=setupScte(device_ip, duration)
 			res = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scteID) + '/action/insert_splice', headers={"Content-Type": "application/json"}, json={})
 			print(res)
 			err = handleResponse(res)
 			if(err != False):
-				print("Error setting splice: " + err.err_code + ': ' + err.err_message)
+				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
 				exit
-			print("Key 2 Hit!!!")
 		if "(KEY_3), up" in keyEvent:
+            print("Key 3 Hit!")
 			duration = 45
 			scteID=setupScte(device_ip, duration)
 			res = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scteID) + '/action/insert_splice', headers={"Content-Type": "application/json"}, json={})
 			print(res)
 			err = handleResponse(res)
 			if(err != False):
-				print("Error setting splice: " + err.err_code + ': ' + err.err_message)
+				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
 				exit
-			print("Key 3 Hit!!!")
 		if "(KEY_4), up" in keyEvent:
+            print("Key 4 Hit!")
 			duration = 60
 			scteID=setupScte(device_ip, duration)
 			res = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scteID) + '/action/insert_splice', headers={"Content-Type": "application/json"}, json={})
 			print(res)
 			err = handleResponse(res)
 			if(err != False):
-				print("Error setting splice: " + err.err_code + ': ' + err.err_message)
+				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
 				exit
-			print("Key 4 Hit!!!")
 		if "(KEY_5), up" in keyEvent:
-			print("Key 5 Hit!!!")
+			print("Key 5 Hit!")
 
 		print(categorize(event))

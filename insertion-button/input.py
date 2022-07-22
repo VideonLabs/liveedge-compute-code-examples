@@ -83,6 +83,7 @@ def setupScte(device_ip, duration):
 
 scteID = setupScte(device_ip, duration)
 
+#Detect the usb device so that we can recognize key presses
 devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
 for device in devices:
 	if "usb" in str(device.phys):
@@ -93,13 +94,16 @@ for device in devices:
 			print(deviceCap)
 			keyEventPath = device.path
 
-#dev = InputDevice('/dev/input/event6')
 dev = InputDevice(keyEventPath)
 
 print(dev)
+
+#Keep looping to detect key presses, taking the respective action for SCTE-35 splice markers
 for event in dev.read_loop():
 	if event.type == ecodes.EV_KEY:
 		keyEvent = str(categorize(event))
+
+        #Insert SCTE marker of 15 second duration
 		if "(KEY_1), up" in keyEvent:
             print("Key 1 Hit!")
 			duration = 15
@@ -110,6 +114,8 @@ for event in dev.read_loop():
 			if(err != False):
 				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
 				exit
+
+        #Insert SCTE marker of 30 second duration
 		if "(KEY_2), up" in keyEvent:
             print("Key 2 Hit!")
 			duration = 30
@@ -120,6 +126,8 @@ for event in dev.read_loop():
 			if(err != False):
 				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
 				exit
+
+        #Insert SCTE marker of 45 second duration
 		if "(KEY_3), up" in keyEvent:
             print("Key 3 Hit!")
 			duration = 45
@@ -130,6 +138,8 @@ for event in dev.read_loop():
 			if(err != False):
 				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
 				exit
+
+        #Insert SCTE marker of 60 second duration
 		if "(KEY_4), up" in keyEvent:
             print("Key 4 Hit!")
 			duration = 60
@@ -140,6 +150,8 @@ for event in dev.read_loop():
 			if(err != False):
 				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
 				exit
+
+        #TODO: Initiate interrupt of splce marker
 		if "(KEY_5), up" in keyEvent:
 			print("Key 5 Hit!")
 

@@ -1,4 +1,4 @@
-# Trigger SCTE insertion and Graphic Overlay with a Physical Button
+# Trigger SCTE insertion with a Physical Button
 
 This example functions to auto-detect a USB keyboard (or USB device that can signal key presses) and make REST API calls for SCTE-35 splice marker insertion on key press.
 

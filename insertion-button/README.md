@@ -19,7 +19,7 @@ docker build -t insertion-button .
 You will need to provide privileged access to the container when you run it so it may access the host environment's devices that will be auto-detected:
 
 ```
-docker run --name insertion-button --privileged insertion-button &
+docker run -d --restart unless-stopped --name insertion-button --privileged insertion-button &
 ```
 The mapped key presses are detailed below:
 * The "1" key, will make a REST API call to the host Videon device to insert a SCTE-35 splice marker of 15 seconds.

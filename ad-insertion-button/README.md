@@ -22,8 +22,7 @@ You will need to provide privileged access to the container when you run it so i
 docker run -d --restart unless-stopped --name scte35 --privileged -v "$PWD":/usr/src/myapp -w /usr/src/myapp scte35 python input.py
 ```
 The mapped key presses are detailed below:
-* The "1" key will make a REST API call to the host Videon device to insert a SCTE-35 splice marker with duration of 120 seconds, Pre-roll of 0.
-* The "2" key will make a REST API call to the host Videon device to insert a SCTE-35 splice marker with duration of 30 seconds, Pre-roll of 0.
-* The "3" key will make a REST API call to the host Videon device to send a SCTE-35 time signal start with Duration 120 seconds and Pre-roll of 200ms.
-* The "4" key will make a REST API call to the host Videon device to send a SCTE-35 time signal end and Pre-roll of 200ms.
-* The "5" key will cancel all active splice commands.
+* The "1" key, will make a REST API call to the host Videon device to insert a SCTE-35 splice marker of 15 seconds.
+* The "2" key, will make a REST API call to the host Videon device to insert a SCTE-35 splice marker of 30 seconds.
+* The "3" key, will make a REST API call to the host Videon device to insert a SCTE-35 splice marker of 45 seconds.
+* The "4" key, will make a REST API call to the host Videon device to insert a SCTE-35 splice marker of 60 seconds.

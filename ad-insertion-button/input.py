@@ -9,7 +9,7 @@ from evdev import InputDevice, categorize, ecodes
 # This is set for the IP used within Docker.
 device_ip = '172.17.0.1'
 
-# The duration in seconds for the insertion action to last
+# The duration in seconds for the insertion action to last (SETTING INITIAL VALUE)
 duration = 10
 
 # Create some placeholder variables
@@ -35,7 +35,7 @@ def handleResponse(response):
     # Only reports an error if we get anything other than an OK error.
     ret = False
     if((int(response.status_code/100) % 10) != 2):
-        ret = {"err_code": res.status_code, "err_message": res.reason + '; ' + res.text}
+        ret = {"err_code": req.status_code, "err_message": req.reason + '; ' + req.text}
     return ret
 
 def setupScte(device_ip, duration):
@@ -51,15 +51,15 @@ def setupScte(device_ip, duration):
 			print("Found SCTE ID: " + str(scte_id))
 	# If no encoder is found, create one
 	if(scte_id == ''):
-		res = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders', headers={"Content-Type": "application/json"}, json={"codec": "scte35"})
-		if(res.status_code == 201):
-			json_data = json.loads(res.text)
+		req = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders', headers={"Content-Type": "application/json"}, json={"codec": "scte35"})
+		if(req.status_code == 201):
+			json_data = json.loads(req.text)
 			print(json_data)
 			print(type(json_data))
 			scte_id = json_data["id"]
 			print("SCTE ID: " + str(scte_id))
 		else:
-			print("Call failed: " + str(res.status_code) + ": " + res.reason)
+			print("Call failed: " + str(req.status_code) + ": " + req.reason)
 
 	# Get the SCTE Object
 	scte_obj = get_json('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scte_id))
@@ -73,13 +73,15 @@ def setupScte(device_ip, duration):
 	# Update the duration to match our duration
 	scte_obj["codec"]["scte35"]["splice_duration"] = duration * 1000
 	tmpUrl = 'http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scte_id)
-	res = requests.put(tmpUrl, headers={"Content-Type": "application/json"}, data=json.dumps(scte_obj))
-	mRet = handleResponse(res)
+	req = requests.put(tmpUrl, headers={"Content-Type": "application/json"}, data=json.dumps(scte_obj))
+	mRet = handleResponse(req)
 	if(mRet != False):
 		print("Error Updating SCTE encoder: " + json.dumps(mRet))
 		print("URL: " + tmpUrl)
 		print("Data: \n" + json.dumps(scte_obj))
 	return scte_id
+
+
 
 scteID = setupScte(device_ip, duration)
 
@@ -89,70 +91,76 @@ for device in devices:
 	if "usb" in str(device.phys):
 
 		if "input0" in str(device.phys):
-			print(device.path, device.name, device.phys)
+			#print(device.path, device.name, device.phys)
 			deviceCap = device.capabilities()
-			print(deviceCap)
+			#print(deviceCap)
 			keyEventPath = device.path
 
 dev = InputDevice(keyEventPath)
 
 print(dev)
 
+# Splice Insert with a preroll of 0 seconds and duration of 30 seconds (This is changed depending on button press)
+splice = {"splice_command":{"value":"splice_insert","splice_insert":{"preroll_time_msec":0,"duration_msec":30000}}}
+# Time Signal
+time_signal_start = {"splice_command":{"value":"time_signal","time_signal":{"preroll_time_msec": 200,"segmentation_descriptor":"021C435545494800008E7FCF0000A4CB8008080000000000000000340200"}}}
+time_signal_end = {"splice_command":{"value":"time_signal","time_signal":{"preroll_time_msec": 200,"segmentation_descriptor":"0217435545494800008E7F9F08080000000000000000350200"}}}
+
 #Keep looping to detect key presses, taking the respective action for SCTE-35 splice markers
 for event in dev.read_loop():
 	if event.type == ecodes.EV_KEY:
 		keyEvent = str(categorize(event))
 
-        #Insert SCTE marker of 15 second duration
+        #Insert SCTE marker of 120 second duration
 		if "(KEY_1), up" in keyEvent:
-            print("Key 1 Hit!")
-			duration = 15
-			scteID=setupScte(device_ip, duration)
-			res = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scteID) + '/action/insert_splice', headers={"Content-Type": "application/json"}, json={})
-			print(res)
-			err = handleResponse(res)
+			print("Key 1 Hit! 120 second Ad Break!!")
+			duration= 120*1000
+			splice["splice_command"]["splice_insert"]["duration_msec"]=duration 
+			req = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scteID) + '/splice_commands', headers={"Content-Type": "application/json"}, json=splice)
+			print(req)
+			err = handleResponse(req)
 			if(err != False):
 				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
 				exit
 
         #Insert SCTE marker of 30 second duration
 		if "(KEY_2), up" in keyEvent:
-            print("Key 2 Hit!")
-			duration = 30
-			scteID=setupScte(device_ip, duration)
-			res = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scteID) + '/action/insert_splice', headers={"Content-Type": "application/json"}, json={})
-			print(res)
-			err = handleResponse(res)
+			print("Key 2 Hit! 30 Second Ad break")
+			duration = 30*1000
+			splice["splice_command"]["splice_insert"]["duration_msec"]=duration # if needed for passing to post add json.dumps(splice) in the request
+			req = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scteID) + '/splice_commands', headers={"Content-Type": "application/json"}, json=splice)
+			print(req)
+			err = handleResponse(req)
 			if(err != False):
 				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
 				exit
 
-        #Insert SCTE marker of 45 second duration
+        #Insert SCTE Time Signal Start 
 		if "(KEY_3), up" in keyEvent:
-            print("Key 3 Hit!")
-			duration = 45
-			scteID=setupScte(device_ip, duration)
-			res = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scteID) + '/action/insert_splice', headers={"Content-Type": "application/json"}, json={})
-			print(res)
-			err = handleResponse(res)
+			print("Key 3 Hit! SCTE Time Signal Start")
+			req = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scteID) + '/splice_commands', headers={"Content-Type": "application/json"}, json=time_signal_start)
+			print(req)
+			err = handleResponse(req)
 			if(err != False):
 				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
 				exit
 
-        #Insert SCTE marker of 60 second duration
+        #Insert SCTE Time Signal End
 		if "(KEY_4), up" in keyEvent:
-            print("Key 4 Hit!")
-			duration = 60
-			scteID=setupScte(device_ip, duration)
-			res = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scteID) + '/action/insert_splice', headers={"Content-Type": "application/json"}, json={})
-			print(res)
-			err = handleResponse(res)
+			print("Key 4 Hit! SCTE Time Signal End")
+			req = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scteID) + '/splice_commands', headers={"Content-Type": "application/json"}, json=time_signal_end)
+			print(req)
+			err = handleResponse(req)
 			if(err != False):
 				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
 				exit
 
-        #TODO: Initiate interrupt of splce marker
+        #Initiate interrupt of ALL SPLICE COMMANDS
 		if "(KEY_5), up" in keyEvent:
-			print("Key 5 Hit!")
-
-		print(categorize(event))
+			print("Key 5 Hit! = Cancel all active splice commands!!")
+			req = requests.delete('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scteID) + '/splice_commands/', headers={"Content-Type": "application/json"}, json={})
+			print(req)
+			err = handleResponse(req)
+			if(err != False):
+				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
+				exit

@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM python
 
 # The LiveEdge Compute environment requires these user groups and permissions
 # in order to allow access to certain outside servers. 

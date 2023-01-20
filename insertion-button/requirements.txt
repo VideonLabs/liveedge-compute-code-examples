@@ -1,6 +1,0 @@
-requests
-evdev
-xmltodict
-urllib3
-requests_html
-pillow

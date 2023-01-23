@@ -1,0 +1,4 @@
+requests
+evdev
+xmltodict
+urllib3

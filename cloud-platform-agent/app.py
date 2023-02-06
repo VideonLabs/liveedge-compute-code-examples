@@ -130,8 +130,9 @@ def updateProfiles():
 # RTMP stream accordingly. Since we expect there to be some set up before going live,
 # We simply set up the streams here, but don't enable them.
 def configStream(id, data):
-    return_code = ''
-    return_msg = ''
+    # Get the latest device state so that the request we make has the right target version
+    updateState(currState["token"], currState["device_guid"])
+
     # Check for a trailing slash in the URL
     if data["stream_url"][len(data["stream_url"])-1] != '/':
         data["stream_url"] = data["stream_url"] + "/"
@@ -158,14 +159,12 @@ def configStream(id, data):
         if currState["outputs"][index]["id"] == id:
             currState["outputs"][index]["config"]["sources"]["audio"][0] = audio_id
             currState["outputs"][index]["config"]["sources"]["video"][0] = video_id
-            currState["outputs"][index]["config"]["service_data"] = "{'url': '" + rtmp_url + "'}"
-            currState["outputs"][index]["config"]["service_value"] = "generic"
+            currState["outputs"][index]["config"]["service_data"] = "{\"url\": \"" + rtmp_url + "\"}"
 
     outRes = videon_cloud_restful.put_out_streams(currState["token"], currState["device_guid"], currState["outputs_target_version"], currState["outputs"])
-
     readyStreams[id] = currState["rtmp_outputs"][id]
-
-    return (outRes["return_code"], outRes["return_body"])
+    
+    return outRes
 
 # We need to run this every time we want to update the state from the device. This builds the
 # master "currState" object we use as a convenience method to work with the browser front end.
@@ -252,15 +251,12 @@ def serve_static(filepath):
 @app.route('/streams/<id:int>', method=['POST'])
 def configure_stream(id):
     # Configures the given stream
+    data = request.json
     try:
-        data = request.json
-        (r_status, r_msg) = configStream(id, data)
-        response.status = "201 Updated"
-        return
-    except ValueError:
-        print("Invalid JSON:\n")
-        print(request.body.read())
-        return bottle.HTTPResponse(body=r_msg, status=r_status)
+        outRes = configStream(id, data)
+        return bottle.HTTPResponse(body="Success, here's the raw response data:\n\n" + str(outRes) + "\n\n" + str(currState), status=201)
+    except:
+        return bottle.HTTPResponse(body="Something went wrong, here's the data:\n\n" + str(outRes), status=500)
 
 # A convenience method to update the SPA
 @app.route('/appstate/', method=['OPTIONS', 'POST'])
@@ -272,17 +268,17 @@ def get_current_state():
 @app.route('/golive', method=['OPTIONS', 'POST'])
 @app.route('/golive/', method=['OPTIONS', 'POST'])
 def goLive():
+    updateState(currState["token"], currState["device_guid"])
     for id in readyStreams:
-        if(readyStreams[id]["enable"]):
-            readyStreams[id]["enable"] = False
-        else:
-            readyStreams[id]["enable"] = True
-        print(readyStreams[id])
-        res = videon_cloud_restful.put_out_streams_configs(videon_cloud_url, id, readyStreams[id])
-        print("Reponse: ", res)
-        if res["return_code"] != 200:
-            response.status = res["return_code"] + ' ' + res["return_body"]
-            return dict({"message": res["return_body"]})
+        for index, output in enumerate(currState["outputs"]):
+            if currState["outputs"][index]["id"] == id:
+                if(readyStreams[id]["enable"]):
+                    readyStreams[id]["enable"] = False
+                else:
+                    readyStreams[id]["enable"] = True
+                currState["outputs"][index]["config"]["enable"] = readyStreams[id]["enable"]
+        res = videon_cloud_restful.put_out_streams(currState["token"], currState["device_guid"], currState["outputs_target_version"], currState["outputs"])
+        return res
     
 
 # A simple POST call that tells the system to enable/disable the output streams

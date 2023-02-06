@@ -80,12 +80,12 @@ def send_shadow_set(token, device_guid, endpoint, target_version, settings_json)
     }
     r = requests.post(cloud_api_url + cloud_devices_endpoint + device_guid + cloud_shadow_command_endpoint, headers={"Authorization":"PAT " + token}, json=data)
     if r.status_code != 200 and r.status_code != 202:
-        sys.exit("status code = " + str(r.status_code))
+        return json.loads(r.text)
     # Pull out command GUID from response
     command_guid = json.loads(r.text)["commands"][0]["command_guid"]
     # Poll shadow command GUID to get results
     retries = 0
-    while True & retries < 20:
+    while True & retries < 5:
         time.sleep(1)
         result = requests.get(cloud_api_url + cloud_devices_endpoint + device_guid + cloud_shadow_command_endpoint + command_guid, headers={"Authorization":"PAT " + token})
         if json.loads(result.text)["command"]["finished"] == True:
@@ -101,8 +101,6 @@ def get_system_properties(token, device_guid):
 
 def put_system_properties(token, device_guid, target_version, json_data):
     result = send_shadow_set(token, device_guid, system_shadow, target_version, json_data)
-    if result["command"]["reported"]["error_code"] != 0:
-        sys.exit("status code = " + str(result["command"]["reported"]["message"]))
     return result
 
 
@@ -115,8 +113,6 @@ def get_in_channel_config(token, device_guid):
 
 def put_in_channel_config(token, device_guid, target_verison , json_data):
     result = send_shadow_set(token, device_guid, inputs_shadow, target_verison , json_data)
-    if result["command"]["reported"]["error_code"] != 0:
-        sys.exit("status code = " + str(result["command"]["reported"]["message"]))
     return result
 
 
@@ -131,8 +127,6 @@ def get_encoders(token, device_guid):
 
 def put_encoders_config(token, device_guid, target_verison , json_data):
     result = send_shadow_set(token, device_guid, encoders_shadow, target_verison , json_data)
-    if result["command"]["reported"]["error_code"] != 0:
-        sys.exit("status code = " + str(result["command"]["reported"]["message"]))
     return result
 
 # TODO: Add this function when LiveEdge Cloud supports adding encoders
@@ -165,8 +159,6 @@ def get_out_streams(token, device_guid):
 
 def put_out_streams(token, device_guid, target_verison , json_data):
     result = send_shadow_set(token, device_guid, outputs_shadow, target_verison , json_data)
-    if result["command"]["reported"]["error_code"] != 0:
-        sys.exit("status code = " + str(result["command"]["reported"]["message"]))
     return result
 
 # STORAGE

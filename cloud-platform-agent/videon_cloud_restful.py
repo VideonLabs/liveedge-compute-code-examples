@@ -1,9 +1,9 @@
 #################################################################################
 #
-# videon_restful.py
+# videon_cloud_restful.py
 #
 # This is a simple set of helper functions to make it easier to call the LiveEdge 
-# Compute RESTful APIs on the EdgeCaster device. 
+# Compute RESTful APIs controlling an enrolled Videon hardware device. 
 # 
 #################################################################################
 
@@ -18,12 +18,14 @@ cloud_api_url = "https://api.videoncloud.com/v1/"
 cloud_personal_access_token_endpoint = "pats/"
 cloud_orgs_endpoint = "orgs/"
 cloud_devices_endpoint = "devices/"
+cloud_shadow_endpoint = "/shadows/"
 cloud_shadow_command_endpoint = "/shadows/commands/"
 system_shadow = "System"
 inputs_shadow = "Inputs"
 encoders_shadow = "Encoders"
 outputs_shadow = "Outputs"
 
+# TODO: Add related helper functions when LiveEdge Cloud supports them
 # set_password_cgi = 'http://{}/cgi-bin/set_password.cgi?password={}'
 # get_ftp_history_cgi = 'http://{}/cgi-bin/get_ftp_history.cgi'
 # check_authentication_enabled_cgi = 'http://{}/cgi-bin/check_authentication_enabled.cgi'updateState
@@ -58,22 +60,34 @@ def get_devices(token, org_guid):
     return r
 
 # Helper function for getting device settings from the Cloud API
-def send_shadow_get(token, device_guid):
+def send_device_shadows_get(token, device_guid):
     # Send shadow get
-    r = requests.get(cloud_api_url + cloud_devices_endpoint + device_guid + "/shadows", headers={"Authorization":"PAT " + token})
+    r = requests.get(cloud_api_url + cloud_devices_endpoint + device_guid + cloud_shadow_endpoint, headers={"Authorization":"PAT " + token})
+    if r.status_code != 200 and r.status_code != 202:
+        sys.exit("status code = " + str(r.status_code))
+    return json.loads(r.text)["shadows"]
+
+# Helper function for getting device settings for a specific shadow from the Cloud API
+def send_shadow_get(token, device_guid, shadow_name):
+    data = {"shadow_names": shadow_name}
+    # Send shadow get
+    r = requests.get(cloud_api_url + cloud_devices_endpoint + device_guid + cloud_shadow_endpoint, headers={"Authorization":"PAT " + token}, params=data)
     if r.status_code != 200 and r.status_code != 202:
         sys.exit("status code = " + str(r.status_code))
     return json.loads(r.text)["shadows"]
 
 # Helper function for sending device commands to the Cloud API
-def send_shadow_set(token, device_guid, endpoint, target_version, settings_json):
+def send_shadow_set(token, device_guid, endpoint, settings_json):
+    # Get the current device state so we have the right target version
+    state = send_shadow_get(token, device_guid, endpoint)
+
     # Send shadow command
     data= {
         "command_type": "set",
         "commands": [
             {
                 "shadow_name": endpoint,
-                "target_version": target_version,
+                "target_version": state[0]["reported"]["current_version"],
                 "state": settings_json
             }
         ]
@@ -96,7 +110,8 @@ def send_shadow_set(token, device_guid, endpoint, target_version, settings_json)
 # SYSTEM
 # NOTE: In the LiveEdge Cloud API, XML settings are included in the System config
 def get_system_properties(token, device_guid):
-    return send_shadow_get(token, device_guid, system_shadow)
+    result = send_device_shadows_get(token, device_guid, system_shadow)
+    return result["reported"]["state"]
 
 
 def put_system_properties(token, device_guid, target_version, json_data):
@@ -107,12 +122,12 @@ def put_system_properties(token, device_guid, target_version, json_data):
 # INPUTS
 
 def get_in_channel_config(token, device_guid):
-    result = send_shadow_get(token, device_guid, inputs_shadow)
-    return result["command"]["response"]["state"]
+    result = send_device_shadows_get(token, device_guid, inputs_shadow)
+    return result["reported"]["state"]
 
 
-def put_in_channel_config(token, device_guid, target_verison , json_data):
-    result = send_shadow_set(token, device_guid, inputs_shadow, target_verison , json_data)
+def put_in_channel_config(token, device_guid, json_data):
+    result = send_shadow_set(token, device_guid, inputs_shadow, json_data)
     return result
 
 
@@ -122,11 +137,11 @@ def put_in_channel_config(token, device_guid, target_verison , json_data):
 #       Editing/parsing of the JSON will have to be done at the application level and sent as a whole when saved in this app.
 
 def get_encoders(token, device_guid):
-    result = send_shadow_get(token, device_guid, encoders_shadow)
-    return result["command"]["response"]["state"]
+    result = send_device_shadows_get(token, device_guid, encoders_shadow)
+    return result["reported"]["state"]
 
-def put_encoders_config(token, device_guid, target_verison , json_data):
-    result = send_shadow_set(token, device_guid, encoders_shadow, target_verison , json_data)
+def put_encoders_config(token, device_guid, json_data):
+    result = send_shadow_set(token, device_guid, encoders_shadow, json_data)
     return result
 
 # TODO: Add this function when LiveEdge Cloud supports adding encoders
@@ -154,11 +169,11 @@ def put_encoders_config(token, device_guid, target_verison , json_data):
 
 # OUTSTREAMS
 def get_out_streams(token, device_guid):
-    result = send_shadow_get(token, device_guid)
-    return result["command"]["response"]["state"]
+    result = send_shadow_get(token, device_guid, outputs_shadow)
+    return result["reported"]["state"]
 
-def put_out_streams(token, device_guid, target_verison , json_data):
-    result = send_shadow_set(token, device_guid, outputs_shadow, target_verison , json_data)
+def put_out_streams(token, device_guid , json_data):
+    result = send_shadow_set(token, device_guid, outputs_shadow, json_data)
     return result
 
 # STORAGE

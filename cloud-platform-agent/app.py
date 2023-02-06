@@ -28,24 +28,16 @@ import cherrypy_cors
 import bottle
 from bottle import Bottle, route, run, template, static_file, response, request
 
-# The LiveEdge Cloud API server does not resides on the same device where this is running.
-# For this example, we will hardcode the API URL
-videon_cloud_url = "https://api.videoncloud.com/v1/"
-
 # CherryPy requires this value to be an integer
 listen_port = int(os.getenv("LISTENING_PORT"))
 
 readyStreams = {}
 currState = {}
-previewEnabled = False
 
 # This accepts the RTMP URL and stream key from our web application and configures the associated
 # RTMP stream accordingly. Since we expect there to be some set up before going live,
 # We simply set up the streams here, but don't enable them.
 def configStream(id, data):
-    # Get the latest device state so that the request we make has the right target version
-    updateState(currState["token"], currState["device_guid"])
-
     # Check for a trailing slash in the URL
     if data["stream_url"][len(data["stream_url"])-1] != '/':
         data["stream_url"] = data["stream_url"] + "/"
@@ -72,7 +64,7 @@ def configStream(id, data):
             currState["outputs"][index]["config"]["sources"]["video"][0] = video_id
             currState["outputs"][index]["config"]["service_data"] = "{\"url\": \"" + rtmp_url + "\"}"
 
-    outRes = videon_cloud_restful.put_out_streams(currState["token"], currState["device_guid"], currState["outputs_target_version"], currState["outputs"])
+    outRes = videon_cloud_restful.put_out_streams(currState["token"], currState["device_guid"], currState["outputs"])
     readyStreams[id] = currState["rtmp_outputs"][id]
     
     return outRes
@@ -80,23 +72,18 @@ def configStream(id, data):
 # We need to run this every time we want to update the state from the device. This builds the
 # master "currState" object we use as a convenience method to work with the browser front end.
 def updateState(token, device_guid):
-    output_streams = {}
-    shadows = videon_cloud_restful.send_shadow_get(token, device_guid)
+    shadows = videon_cloud_restful.send_device_shadows_get(token, device_guid)
     # Load in the respective shadows
     for shadow in shadows:
         match shadow["shadow_name"]:
             case "System":
                 currState["system"] = shadow["reported"]["state"]
-                currState["system_target_version"] = shadow["reported"]["current_version"]
             case "Inputs":
                 currState["inputs"] = shadow["reported"]["state"]
-                currState["inputs_target_version"] = shadow["reported"]["current_version"]
             case "Encoders":
                 currState["encoders"] = shadow["reported"]["state"]
-                currState["encoders_target_version"] = shadow["reported"]["current_version"]
             case "Outputs":
                 currState["outputs"] = shadow["reported"]["state"]
-                currState["outputs_target_version"] = shadow["reported"]["current_version"]
 
     # For the purposes of this example, we only care about the RTMP streams - used by all of the services we've configured
     rtmp_ids = {}
@@ -159,10 +146,10 @@ def configure_stream(id):
     # Configures the given stream
     data = request.json
     try:
-        outRes = configStream(id, data)
-        return bottle.HTTPResponse(body="Success, here's the raw response data:\n\n" + str(outRes) + "\n\n" + str(currState), status=201)
+        response = configStream(id, data)
+        return bottle.HTTPResponse(body=response, status=201)
     except:
-        return bottle.HTTPResponse(body="Something went wrong, here's the data:\n\n" + str(outRes), status=500)
+        return bottle.HTTPResponse(body=response, status=500)
 
 # A convenience method to update the SPA
 @app.route('/appstate/', method=['OPTIONS', 'POST'])
@@ -174,16 +161,16 @@ def get_current_state():
 @app.route('/golive', method=['OPTIONS', 'POST'])
 @app.route('/golive/', method=['OPTIONS', 'POST'])
 def goLive():
-    updateState(currState["token"], currState["device_guid"])
     for id in readyStreams:
         for index, output in enumerate(currState["outputs"]):
             if currState["outputs"][index]["id"] == id:
+                # Toggle on/off
                 if(readyStreams[id]["enable"]):
                     readyStreams[id]["enable"] = False
                 else:
                     readyStreams[id]["enable"] = True
                 currState["outputs"][index]["config"]["enable"] = readyStreams[id]["enable"]
-        res = videon_cloud_restful.put_out_streams(currState["token"], currState["device_guid"], currState["outputs_target_version"], currState["outputs"])
+        res = videon_cloud_restful.put_out_streams(currState["token"], currState["device_guid"], currState["outputs"])
         return res
     
 
@@ -202,7 +189,6 @@ def getDevices():
     data = request.json
     devices_result = videon_cloud_restful.get_devices(data["token"], data["org_guid"])
     return devices_result
-
 
 app.install(EnableCors())
 

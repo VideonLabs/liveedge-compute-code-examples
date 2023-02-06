@@ -404,6 +404,7 @@ building library - is supported.
         contentType: 'application/json',
         processData: false,
         success: function(data) {
+          // TODO: make this update based on the actual outputs statuses, rather than toggling and assuming all is working properly
           if(isStreaming) {
             if($("#go_live_button").hasClass("select-button-active")) {
               $("#go_live_button").removeClass("select-button-active");
@@ -466,13 +467,6 @@ building library - is supported.
           alert("An error occurred:\n\n" + JSON.stringify(error));
         }
       });
-    }
-
-    //Handling the preview video
-    function previewVid(ip) {
-      console.log("Receiving IP " + ip);
-      var url = 'http://' + ip +'/live/CurrentThumb.jpg?' + Date.now();
-      $( "#prev_jpg" ).attr('src', url);
     }
 
     $( document ).ready( function() {

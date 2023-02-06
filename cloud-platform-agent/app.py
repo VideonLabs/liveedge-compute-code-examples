@@ -39,93 +39,6 @@ readyStreams = {}
 currState = {}
 previewEnabled = False
 
-######################################################################################################
-#
-# Application specific helper code code
-#
-# For this use case, we created configuration files with the audio and video details for each of the 
-# services this application will support. There should be one file for each service covered (i.e. one 
-# for Twitter, one for Twitch, one for Faceboo, etc.). See the files in the `config` directory for the 
-# format. 
-services = [
-    "youtube.json"
-]
-
-# Setup the configurations - these are defined as JSON files in the ./config directory.
-# We'll loop through the config files to extract the details and ensure each profile is setup properly
-svc_config = {}
-
-for service in services:
-    service = "./config/" + service
-    print("Loading ", service)
-    if path.exists(service):
-        jsonfile = open(service, "r")
-        try:
-            data = json.load(jsonfile)
-            svc_config[data["name"]] = data
-        except ValueError:  # includes simplejson.decoder.JSONDecodeError
-            print("Error decoding JSON for file " + service)
-
-        jsonfile.close()
-
-    else:
-        print("Could not find path ", service)
-
-#
-######################################################################################################
-
-
-
-# The device is capable of storing several profiles containing the audio and configuration details
-# for each stream type. For this use case, we stored the values recommended by the stream distributors
-# in the external configuration files we just loaded. 
-#
-# If this is the first time this application is running, then we need to create those profiles on the device. 
-
-def updateProfiles():
-    vid_encoders = {}
-    aud_encoders = {}
-
-    # The EdgeCaster saves the profiles we create on the device, so it's best to check
-    # whether they already exist before creating new ones. Let's get the profiles from the device.
-    encoders = videon_cloud_restful.get_encoders(videon_cloud_url)
-    for profile in encoders["vid_encoders"]:
-        currEnc = videon_cloud_restful.get_vid_encoders_config(videon_cloud_url, profile["vid_encoder_id"])
-        vid_encoders[currEnc["name"]] = profile["vid_encoder_id"]
-
-    for profile in encoders["aud_encoders"]:
-        currEnc = videon_cloud_restful.get_aud_encoders_config(videon_cloud_url, profile["aud_encoder_id"])
-        aud_encoders[currEnc["name"]] = profile["aud_encoder_id"]
-
-    print("Videos")
-    print(vid_encoders)
-    print("Audios")
-    print(aud_encoders)
-
-    # OK, let's see whether we need to create new profiles. Video first
-    for service in svc_config.keys():
-        print("Service: " + service)
-        if(svc_config[service]["video"]["name"] in vid_encoders.keys()):
-            # It exists already, so let's grab the ID
-            svc_config[service]["video_id"] = vid_encoders[svc_config[service]["video"]["name"]]
-        else:
-            # Doesn't exist - let's add the profile to the device. 
-            cData = videon_cloud_restful.add_vid_encoder(videon_cloud_url)
-            print("CData: ")
-            print(cData)
-            data = videon_cloud_restful.put_vid_encoders_config(videon_cloud_url, cData["id"], svc_config[service]["video"])
-            svc_config[service]["video_id"] = cData["id"]
-        if(svc_config[service]["audio"]["name"] in aud_encoders.keys()):
-            # It exists already, so let's grab the ID
-            svc_config[service]["audio_id"] = aud_encoders[svc_config[service]["audio"]["name"]]
-        else:
-            # Doesn't exist - let's add the profile to the device.
-            cData = videon_cloud_restful.add_aud_encoder(videon_cloud_url)
-            data = videon_cloud_restful.put_aud_encoders_config(videon_cloud_url, cData["id"], svc_config[service]["audio"])
-            svc_config[service]["audio_id"] = cData["id"]
-    print("SERVICES: \n")
-    print(svc_config)
-
 # This accepts the RTMP URL and stream key from our web application and configures the associated
 # RTMP stream accordingly. Since we expect there to be some set up before going live,
 # We simply set up the streams here, but don't enable them.
@@ -140,8 +53,6 @@ def configStream(id, data):
     # This is how many services set up their RTMP input streams - streaming URL + stream key.
     # Note, this may not work for all such services.
     rtmp_url = data["stream_url"] + data["stream_key"]
-
-    # profile = svc_config[data["profile"]]
 
     # For simplicity's sake, we'll just take the first audio and video encoder we find, there should always be one of each created by the Videon device
     # TODO: Update this to load the YouTube audio encoder once LiveEdge Cloud supports adding encoders
@@ -200,12 +111,7 @@ def updateState(token, device_guid):
     currState["token"] = token
     currState["device_guid"] = device_guid
     currState["rtmp_outputs"] = rtmp_ids
-    currState["services"] = svc_config
     return currState
-
-
-# We need to run this at least once to load the profiles up.
-# updateProfiles()
 
 ##########################################################################################################################
 #

@@ -344,9 +344,6 @@ building library - is supported.
         html += "<div id=\"" + stream_id + "\" class=\"output_stream_fields\">";
         html += "<h3>Output Channel " + (n + 1) + "</h3>";
         html += "<div class=\"h_form\">";
-        html += "<select id=\"output_id_" + stream_id +"\" name=\"output_id_" + stream_id +"\">";
-        html += "<option value=\"\">--- Select One ---</option>";
-
         for(var service in appState["services"]) {
           console.log("Service: " + service);
           html += "<option value=\"" + service + "\">" + service + "</option>";
@@ -368,7 +365,6 @@ building library - is supported.
     function configStream(id) {
       var stream = {};
       stream["id"] = id;
-      stream["profile"] = $('#output_id_' + id).val();
       stream["stream_key"] = $("#output_id_" + id + "_key").val();
       stream["stream_url"] = $("#output_id_" + id + "_url").val();
 

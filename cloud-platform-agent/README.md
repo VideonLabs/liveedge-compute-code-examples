@@ -1,5 +1,5 @@
 # Dockerized LiveEdge Cloud control UI Example
-This Docker example serves as a demonstration of how a third-party controller application would interface with Videon's LiveEdge Cloud API. In this example, we step through what it takes to get a simple RTMP stream running via calls to the LiveEdge Cloud API, all from a server that can be run from anywhere.
+This Docker example serves as a demonstration of how a third-party controller application would interface with Videon's LiveEdge Cloud API. In this example, we step through what it takes to get a simple RTMP stream running via calls to the LiveEdge Cloud API, all from a server that can be run from anywhere (a server, your computer, or even a Videon EdgeCaster to control other Videon devices!).
 
 This demonstration application is intended to serve as a springboard for partners to develop their own, production-ready third-party controller, not as a tool to use in a production environment. As a result, if usage instructions are followed, this example functions well to demonstrate to interact with the LiveEdge Cloud API, but may not catch all errors or handle all user error.
 
@@ -7,7 +7,7 @@ Documentation for LiveEdge Cloud can be found [here](https://support.videonlabs.
 
 # How the app works
 ## videon_cloud_restful.py
-This is a library that can be used as it is by partners in their controller applications. See the comments for the suggested usage of this library.
+This is a library that can be used as it is by partners in their controller applications. See the code comments for the suggested usage of this library.
 ## customui.html
 This is the webpage that is hosted by the application and gathers user input to be passed to app.py. It primarily serves to demonstrate functionality and is, to a degree, intentionally not the most aesthetically pleasing as to discourage this example application from being used in production environments.
 ## app.py
@@ -16,11 +16,7 @@ This is the backend application that processes the user input from customui.html
 # How to run the app
 To run this example on your local device, you'll first need to [enroll your device in LiveEdge Cloud](https://support.videonlabs.com/hc/en-us/articles/6004577224979-How-to-use-LiveEdge-Cloud):
 
-```
-
 Clone this repository to a directory on your local machine, then:
-
-```
 
 Run the `docker build` command in the working directory:
 

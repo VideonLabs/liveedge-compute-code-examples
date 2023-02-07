@@ -33,7 +33,7 @@ building library - is supported.
       margin: 0px;
     }
 
-    #authentication {
+    #get_device {
       float: left;
       width: 33.33%;
       text-align: center;
@@ -61,6 +61,27 @@ building library - is supported.
       margin-bottom: 20px;
     }
 
+    #authentication {
+      text-align: center;
+      position: relative;
+      font-size: 20pt;
+      margin-bottom: 20px;
+    }
+
+    #org_select {
+      text-align: center;
+      position: relative;
+      font-size: 20pt;
+      margin-bottom: 20px;
+    }
+
+    #device_select {
+      text-align: center;
+      position: relative;
+      font-size: 20pt;
+      margin-bottom: 20px;
+    }
+
     #go_live {
       float: left;
       width: 33.33%;
@@ -70,8 +91,7 @@ building library - is supported.
     }
 
     #pat {
-      margin: 0px auto;
-      width: 100%;
+      width: 90%;
     }
 
     #hero:after {
@@ -248,24 +268,28 @@ building library - is supported.
         </li>
       </ul>
     </div>
-    <div id="authentication">
-      <div>
-        <input id="pat" type="text" name="pat">
-      </div>
-      <div >
-        <input type="button" id="submit-pat" name="submit-pat" value="Submit Personal Access Token">
+    <div id="get_device">
+      <div id="authentication">
+        <div>
+          <input id="pat" type="text" name="pat">
+        </div>
+        <div >
+          <input type="button" id="submit-pat" name="submit-pat" value="Submit Personal Access Token">
+        </div>
       </div>
 
-      <div id="org-select">
-        <span>LiveEdge Cloud Organization</span>
-        <select id="orgDropdown" name="orgs">
+      <div id="org_select">
+        <span id="org_label">LiveEdge Cloud Organization</span>
+        <br/>
+        <select id="orgDropdown" name="orgs" disabled="true">
           <option value="none" selected disabled hidden>Select an organization</option>
         </select>
       </div>
-
-      <div id="device-select">
-        <span>Device</span>
-        <select id="deviceDropdown" name="devices">
+      
+      <div id="device_select">
+        <span id="device_label">Device</span>
+        <br/>
+        <select id="deviceDropdown" name="devices" disabled="true">
           <option value="none" selected disabled hidden>Select a device</option>
         </select>
       </div>
@@ -311,9 +335,7 @@ building library - is supported.
         },
         error: function(error) {
           alert("An error occurred:\n\n" + JSON.stringify(error));
-        },
-        // dataType: "json", 
-        // complete: loadState,
+        }
       });
     }
 
@@ -426,6 +448,9 @@ building library - is supported.
     }
 
     function submitPAT(token) {
+      var orgLabel = document.getElementById("org_label");
+      orgLabel.textContent = "Retrieving Organizations...";
+
       $.ajax({
         url: "/submitPAT/" + token,
         method: 'POST',
@@ -439,6 +464,13 @@ building library - is supported.
             newOrg.value = orgs[org].org_guid;
             orgSelect.add(newOrg);
           }
+          if (!orgSelect.options[1]) {
+            alert("No organizations found, check the entered Personal Access Token and that the associated account is part of an organization");
+            orgSelect.disabled = true;
+          } else {
+            orgSelect.disabled = false;
+          }
+          orgLabel.textContent = "LiveEdge Cloud Organizations";
         },
         error: function(error) {
           alert("An error occurred:\n\n" + JSON.stringify(error));
@@ -447,6 +479,9 @@ building library - is supported.
     }
 
     function getDevices(token, org_guid) {
+      var deviceLabel = document.getElementById("device_label");
+      deviceLabel.textContent = "Retrieving Devices...";
+
       $.ajax({
         url: "/getDevices/",
         method: 'POST',
@@ -455,6 +490,7 @@ building library - is supported.
         contentType: 'application/json',
         success: function(data) {
           var deviceSelect = document.getElementById("deviceDropdown");
+          var deviceDiv = document.getElementById("device_select");
           var devices = data["devices"];
           for (var device in devices) {
             var newDevice = document.createElement("option");
@@ -462,6 +498,13 @@ building library - is supported.
             newDevice.value = devices[device].device_guid;
             deviceSelect.add(newDevice);
           }
+          if (!deviceSelect.options[1]) {
+            alert("No devices found, check that there are devices assigned to the selected organization");
+            deviceSelect.disabled = true;
+          } else {
+            deviceSelect.disabled = false;
+          }
+          deviceLabel.textContent = "Devices";
         },
         error: function(error) {
           alert("An error occurred:\n\n" + JSON.stringify(error));

@@ -106,7 +106,7 @@ def send_shadow_set(token, device_guid, shadow_name, settings_json):
         "command_type": "set",
         "commands": [
             {
-                "shadow_name": endpoint,
+                "shadow_name": shadow_name,
                 "target_version": state[0]["reported"]["current_version"],
                 "state": settings_json
             }

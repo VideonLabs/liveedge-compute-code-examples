@@ -32,6 +32,9 @@ outputs_shadow = "Outputs"
 # reset_settings_cgi = 'http://{}/cgi-bin/reset_settings.cgi'
 
 # Helper function to confirm PAT and return expiration date
+# This function expects a Personal Access Token that is generated from the LiveEdge Cloud platform
+#   and returns either the expiration date of the token if valid or "Token not found" if not valid.
+# Constructed endpoint: https://api.videoncloud.com/v1/pats/
 def get_token_expiriation(token):
     r = requests.get(cloud_api_url + cloud_personal_access_token_endpoint, headers={"Authorization":"PAT " + token})
     if r.status_code != requests.codes.ok:
@@ -45,6 +48,9 @@ def get_token_expiriation(token):
     return "Token not found"
 
 # Helper function to get a list of orgs associated with a token GUID
+# This function expects a valid LiveEdge Cloud Personal Access Token
+#   and returns a list of organizations associated with that PAT
+# Constructed endpoint: https://api.videoncloud.com/v1/orgs/
 def get_organizations(token):
     r = requests.get(cloud_api_url + cloud_orgs_endpoint, headers={"Authorization":"PAT " + token})
     if r.status_code != requests.codes.ok:
@@ -52,6 +58,9 @@ def get_organizations(token):
     return r
 
 # Helper function to get a list of devices associated with and org GUID
+# This function expects a valid LiveEdge Cloud Personal Access Token and organization GUID
+#   and returns a list of devices associated with that organization that the user has access to
+# Constructed endpoint: https://api.videoncloud.com/v1/devices/
 def get_devices(token, org_guid):
     payload = {"org_guid" : org_guid}
     r = requests.get(cloud_api_url + cloud_devices_endpoint, headers={"Authorization":"PAT " + token}, params=payload)
@@ -60,6 +69,9 @@ def get_devices(token, org_guid):
     return r
 
 # Helper function for getting device settings from the Cloud API
+# This function expects a valid LiveEdge Cloud Personal Access Token and device GUID
+#   and returns the full shadow of that device
+# Constructed endpoint: https://api.videoncloud.com/v1/{device_guid}/shadows
 def send_device_shadows_get(token, device_guid):
     # Send shadow get
     r = requests.get(cloud_api_url + cloud_devices_endpoint + device_guid + cloud_shadow_endpoint, headers={"Authorization":"PAT " + token})
@@ -68,6 +80,9 @@ def send_device_shadows_get(token, device_guid):
     return json.loads(r.text)["shadows"]
 
 # Helper function for getting device settings for a specific shadow from the Cloud API
+# This function expects a valid LiveEdge Cloud Personal Access Token, device GUID, and desired shadow name
+#   and returns the specified shadow of that device
+# Constructed endpoint: https://api.videoncloud.com/v1/{device_guid}/shadows
 def send_shadow_get(token, device_guid, shadow_name):
     data = {"shadow_names": shadow_name}
     # Send shadow get
@@ -77,9 +92,14 @@ def send_shadow_get(token, device_guid, shadow_name):
     return json.loads(r.text)["shadows"]
 
 # Helper function for sending device commands to the Cloud API
-def send_shadow_set(token, device_guid, endpoint, settings_json):
+# This function expects a valid LiveEdge Cloud Personal Access Token, device GUID, 
+#   desired shadow name, and properly formatted JSON of the shadow state 
+#   and returns the result of the completed command
+# This function will time out if it takes too long for the command to complete in LiveEdge Cloud
+# Constructed endpoint: https://api.videoncloud.com/v1/{device_guid}/shadows/commands/
+def send_shadow_set(token, device_guid, shadow_name, settings_json):
     # Get the current device state so we have the right target version
-    state = send_shadow_get(token, device_guid, endpoint)
+    state = send_shadow_get(token, device_guid, shadow_name)
 
     # Send shadow command
     data= {

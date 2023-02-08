@@ -545,6 +545,7 @@ building library - is supported.
               return a.text == b.text ? 0 : a.text < b.text ? -1 : 1
             }));
             deviceSelect.disabled = false;
+            setDeviceNames(token);
           }
           deviceLabel.textContent = "Devices";
         },
@@ -552,6 +553,28 @@ building library - is supported.
           alert("An error occurred:\n\n" + JSON.stringify(error));
         }
       });
+    }
+
+    function setDeviceNames(token) {
+      var devices = document.getElementById("deviceDropdown").options;
+
+      for (let i = 0; i < devices.length; i++) {
+        if (devices[i].text != "Select a device") {
+          $.ajax({
+            url: "/getDeviceSystemConfig/",
+            method: 'POST',
+            data: JSON.stringify({token: token, device_guid: devices[i].value}),
+            dataType: "json",
+            contentType: 'application/json',
+            success: function(data) {
+              devices[i].text = data["device_name"];
+            },
+            error: function(error) {
+              alert("An error occurred:\n\n" + JSON.stringify(error));
+            }
+          });
+        }
+      }
     }
 
     $( document ).ready( function() {

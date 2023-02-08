@@ -130,8 +130,8 @@ def send_shadow_set(token, device_guid, shadow_name, settings_json):
 # SYSTEM
 # NOTE: In the LiveEdge Cloud API, XML settings are included in the System config
 def get_system_properties(token, device_guid):
-    result = send_device_shadows_get(token, device_guid, system_shadow)
-    return result["reported"]["state"]
+    result = send_shadow_get(token, device_guid, system_shadow)
+    return result[0]["reported"]["state"]
 
 
 def put_system_properties(token, device_guid, target_version, json_data):
@@ -142,7 +142,7 @@ def put_system_properties(token, device_guid, target_version, json_data):
 # INPUTS
 
 def get_in_channel_config(token, device_guid):
-    result = send_device_shadows_get(token, device_guid, inputs_shadow)
+    result = send_shadow_get(token, device_guid, inputs_shadow)
     return result["reported"]["state"]
 
 
@@ -157,7 +157,7 @@ def put_in_channel_config(token, device_guid, json_data):
 #       Editing/parsing of the JSON will have to be done at the application level and sent as a whole when saved in this app.
 
 def get_encoders(token, device_guid):
-    result = send_device_shadows_get(token, device_guid, encoders_shadow)
+    result = send_shadow_get(token, device_guid, encoders_shadow)
     return result["reported"]["state"]
 
 def put_encoders_config(token, device_guid, json_data):

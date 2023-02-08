@@ -174,7 +174,7 @@ def goLive():
         return res
     
 
-# A simple POST call that tells the system to enable/disable the output streams
+# A POST call that uses the helper library to make a call to the API for token information, then get organizations if token is valid
 @app.route('/submitPAT/<token>', method=['OPTIONS', 'POST'])
 def submitPAT(token):
     token_result = videon_cloud_restful.get_token_expiriation(token)
@@ -183,12 +183,19 @@ def submitPAT(token):
         return org_result
     return token_result
 
-# A simple POST call that tells the system to enable/disable the output streams
+# A POST call that uses the helper library to make a call to the API for a device list
 @app.route('/getDevices/', method=['OPTIONS', 'POST'])
 def getDevices():
     data = request.json
     devices_result = videon_cloud_restful.get_devices(data["token"], data["org_guid"])
     return devices_result
+
+# A POST call that uses the helper library to make a call to the API for a device's name
+@app.route('/getDeviceSystemConfig/', method=['OPTIONS', 'POST'])
+def getDeviceSystemConfig():
+    data = request.json
+    device_system_shadow = videon_cloud_restful.get_system_properties(data["token"], data["device_guid"])
+    return device_system_shadow["config"]
 
 app.install(EnableCors())
 

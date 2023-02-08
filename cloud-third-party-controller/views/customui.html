@@ -326,10 +326,7 @@ building library - is supported.
         dataType: "json",
         contentType: 'application/json',
         success: function( data ) {
-          if(!("rtmp_outputs" in currState)) {
-            //We only want to setup the page at load, not every poll.
-            setupPage(data);
-          }
+          setupPage(data);
           currState = data;
           updateChecklist(currState);
         },
@@ -360,6 +357,10 @@ building library - is supported.
     */
     function setupPage(appState) {
       console.log("Setting up page... ");
+
+      streamSetup = document.getElementById("stream_setup");
+      streamSetup.innerHTML = "";
+
       var html = '';
       var n = 0;
       for(var stream_id in appState["rtmp_outputs"]) {
@@ -380,7 +381,10 @@ building library - is supported.
         html = '';
         n++;
       }
-      if(n > 0) $("#profiles_loaded_chk").prop('checked', true); 
+      if(n > 0) {
+        $("#profiles_loaded_chk").prop('checked', true);
+        streamSetup.hidden = false;
+      }
     }
 
     //Send the stream auth data to the device
@@ -534,6 +538,7 @@ building library - is supported.
           if (!deviceSelect.options[1]) {
             alert("No devices found, check that there are devices assigned to the selected organization");
             deviceSelect.disabled = true;
+            document.getElementById("stream_setup").hidden = true;
           } else {
             // Sort the results
             deviceSelect.options = $("#deviceDropdown").html($("#deviceDropdown option").sort(function (a, b) {

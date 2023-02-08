@@ -457,7 +457,22 @@ building library - is supported.
         contentType: 'application/json',
         success: function(data) {
           var orgSelect = document.getElementById("orgDropdown");
+
+          // Need to clear the dropdown and load in only the default selection
+          while (orgSelect.options.length > 0) {                
+            orgSelect.remove(0);
+          } 
+
+          defaultOrg = document.createElement("option");
+          defaultOrg.text = "Select an organization";
+          defaultOrg.setAttribute("selected", true);
+          defaultOrg.setAttribute("disabled", "diabled");
+          defaultOrg.setAttribute("hidden", "hidden");
+
+          orgSelect.add(defaultOrg);
+
           var orgs = JSON.parse(data)["orgs"];
+          
           for (var org in orgs) {
             var newOrg = document.createElement("option");
             newOrg.text = orgs[org].org_name;
@@ -468,6 +483,10 @@ building library - is supported.
             alert("No organizations found, check the entered Personal Access Token and that the associated account is part of an organization");
             orgSelect.disabled = true;
           } else {
+            // Sort the results
+            orgSelect.options = $("#orgDropdown").html($("#orgDropdown option").sort(function (a, b) {
+              return a.text == b.text ? 0 : a.text < b.text ? -1 : 1
+            }));
             orgSelect.disabled = false;
           }
           orgLabel.textContent = "LiveEdge Cloud Organizations";

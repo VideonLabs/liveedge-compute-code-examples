@@ -1,0 +1,4 @@
+cherrypy
+cherrypy_cors
+bottle
+requests

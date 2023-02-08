@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<!--
+
+This UI was mostly hand coded in order to help developers better read the code without navigating complex 
+framework structures. However, using such a framework - or any other advanced browser-based application 
+building library - is supported. 
+
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <title>Stream-O-Matic: Videon LiveCast Custom UI Example</title>
+  <link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0px;
+      padding: 0px;
+      font-size: 12pt;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    }
+
+    #header {
+      margin: 0px;
+      padding: 25px 25px 25px 25px;
+      background-color: #000000;
+      color: #FFFFFF;
+    }
+
+    #header h1 {
+      font-size: 36pt;
+      margin: 0px;
+    }
+
+    #get_device {
+      float: left;
+      width: 33.33%;
+      text-align: center;
+      position: relative;
+    }
+
+    #hero {
+      margin: 25px 0px 0px 0px;
+    }
+
+    #checklist {
+      float: left;
+      width: 33.33%;
+      font-size: 20pt;
+    }
+
+    #checklist ul {
+      list-style-type: none;
+      padding: 20px;
+      margin: 0px auto;
+      width: 300px;
+    }
+
+    #checklist ul li {
+      margin-bottom: 20px;
+    }
+
+    #authentication {
+      text-align: center;
+      position: relative;
+      font-size: 20pt;
+      margin-bottom: 20px;
+    }
+
+    #org_select {
+      text-align: center;
+      position: relative;
+      font-size: 20pt;
+      margin-bottom: 20px;
+    }
+
+    #device_select {
+      text-align: center;
+      position: relative;
+      font-size: 20pt;
+      margin-bottom: 20px;
+    }
+
+    #go_live {
+      float: left;
+      width: 33.33%;
+      margin: 25px 0px 0px 0px;
+      text-align: center;
+      position: relative;
+    }
+
+    #pat {
+      width: 90%;
+    }
+
+    #hero:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+    #stream_setup {
+      position: relative;
+    }
+
+    .container {
+      position: relative;
+    }
+
+    #stream_setup {
+      margin: 0px auto;
+      width: 60%;
+    }
+
+    .output_stream_fields {
+      font-size: 20pt;
+    }
+
+    .output_stream_fields input {
+      font-size: 20pt;
+    }
+
+    .output_stream_fields select {
+      font-size: 20pt;
+    }
+
+    .output_stream_fields button {
+      font-size: 20pt;
+      font-weight: bold;
+      color: #FFFFFF;
+    }
+
+    .select-button {
+      width: 200px;
+      height: 200px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 50%;
+      font-size: 20pt;
+      font-weight: bold;
+      color: #FFFFFF;
+      margin: 0px;
+      position: relative;
+    }
+
+    .select-button-text {
+      margin: 0;
+      position: absolute;  
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+
+    .select-button-ready {
+      background: #00CC00;
+      background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #00CC00), color-stop(100%, #00FF00));
+      background-image: -moz-gradient(linear, left top, left bottom, color-stop(0%, #00CC00), color-stop(100%, #00FF00));
+      box-shadow: 0 15px #00CC00;
+    }
+
+    .select-button-default {
+      background: #0088ff;
+      background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #0088ff), color-stop(100%, #0099ff));
+      background-image: -moz-gradient(linear, left top, left bottom, color-stop(0%, #0088ff), color-stop(100%, #0099ff));
+      box-shadow: 0 15px #007ccf;
+    }
+
+    .select-button-active {
+      background: #CC0000;
+      background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #CC0000), color-stop(100%, #FF0000));
+      background-image: -moz-gradient(linear, left top, left bottom, color-stop(0%, #CC0000), color-stop(100%, #FF0000));
+      box-shadow: 0 15px #CC0000;
+    }
+
+    .select-button:active {
+      box-shadow: 0 0 #e24f4f;
+      -webkit-transform: translate(0px, 15px);
+      -moz-transform: translate(0px, 15px);
+      -ms-transform: translate(0px, 15px);
+      -o-transform: translate(0px, 15px);
+      -webkit-transition: 0.1s all ease-out;
+      -moz-transition: 0.1s all ease-out;
+      -ms-transition: 0.1s all ease-out;
+      -o-transition: 0.1s all ease-out;
+      transition: 0.1s all ease-out;
+    }
+
+    .round_check {
+      position: relative;
+    }
+
+    .round_check label {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      cursor: pointer;
+      height: 28px;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 28px;
+    }
+
+    .round_check label:after {
+      border: 2px solid #fff;
+      border-top: none;
+      border-right: none;
+      content: "";
+      height: 6px;
+      left: 7px;
+      opacity: 0;
+      position: absolute;
+      top: 8px;
+      transform: rotate(-45deg);
+      width: 12px;
+    }
+
+    .round_check input[type="checkbox"] {
+      visibility: hidden;
+    }
+
+    .round_check input[type="checkbox"]:checked + label {
+      background-color: #66bb6a;
+      border-color: #66bb6a;
+    }
+
+    .round_check input[type="checkbox"]:checked + label:after {
+      opacity: 1;
+    }
+
+    .stream-saved {
+      background-color: #fdb515;
+    }
+    .unsaved {
+      background-color: #005500;
+    }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <h1>Stream-O-Matic</h1>
+  </div>
+  <div id="hero">
+    <div id="checklist">
+      <ul>
+        <li class="checklist_false">
+          <div class="round_check">
+            <input type="checkbox" id="vid_input_detected_chk" />
+            <label for="vid_input_detected_chk"></label>
+            <span style="padding-left: 15px;">Video Input Detected</span>
+          </div>
+        </li>
+        <li class="checklist_false">
+          <div class="round_check">
+            <input type="checkbox" id="aud_input_detected_chk" />
+            <label for="aud_input_detected_chk"></label>
+            <span style="padding-left: 15px;">Audio Input Detected</span>
+          </div>
+        </li>
+        <li class="checklist_false">
+          <div class="round_check">
+            <input type="checkbox" id="profiles_loaded_chk" />
+            <label for="profiles_loaded_chk"></label>
+            <span style="padding-left: 15px;">Profiles Loaded</span>
+          </div>  
+        </li>
+      </ul>
+    </div>
+    <div id="get_device">
+      <div id="authentication">
+        <div>
+          <input id="pat" type="text" name="pat">
+        </div>
+        <div >
+          <input type="button" id="submit-pat" name="submit-pat" value="Submit Personal Access Token">
+        </div>
+      </div>
+
+      <div id="org_select">
+        <span id="org_label">LiveEdge Cloud Organization</span>
+        <br/>
+        <select id="orgDropdown" name="orgs" disabled="true">
+          <option value="none" selected disabled hidden>Select an organization</option>
+        </select>
+      </div>
+      
+      <div id="device_select">
+        <span id="device_label">Device</span>
+        <br/>
+        <select id="deviceDropdown" name="devices" disabled="true">
+          <option value="none" selected disabled hidden>Select a device</option>
+        </select>
+      </div>
+    </div>
+    <div id="go_live">
+      <div class="select-button select-button-default" id="go_live_button">
+        <div class="select-button-text" id="stream_button_text">
+          No Streams<br />Configured
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div id="stream_setup"><div>
+
+  </div>
+
+
+  <script src="http://cdn.dashjs.org/v3.1.0/dash.all.min.js"></script>
+  <script>
+    var currState = {};
+    var deviceIP = '';
+    var streamReady = false;
+    var isStreaming = false;
+
+    /*
+      Grabs the current appstate from the server.
+    */
+    function loadState(token, device_guid) {
+      $.ajax({
+        url: "/appstate/",
+        method: "POST",
+        data: JSON.stringify({token: token, device_guid: device_guid}),
+        dataType: "json",
+        contentType: 'application/json',
+        success: function( data ) {
+          setupPage(data);
+          currState = data;
+          updateChecklist(currState);
+        },
+        error: function(error) {
+          alert("An error occurred:\n\n" + JSON.stringify(error));
+        }
+      });
+    }
+
+    function updateChecklist(appState) {
+      var inputs = new Array();
+      for(var channel_id in appState["inputs"]) {
+        if(appState["inputs"][0]["audio_input_detected"] == true) {
+          $("#aud_input_detected_chk").prop('checked', true); 
+        } else {
+          $("#aud_input_detected_chk").prop('checked', false); 
+        }
+        if(appState["inputs"][0]["video_input_format"] != "FORMAT_UNDEFINED") {
+          $("#vid_input_detected_chk").prop('checked', true); 
+        } else {
+          $("#vid_input_detected_chk").prop('checked', false); 
+        }
+      }
+    }
+
+    /*
+      Sets up the output streams section based on the number of out streams available and the profiles we defined.
+    */
+    function setupPage(appState) {
+      console.log("Setting up page... ");
+
+      streamSetup = document.getElementById("stream_setup");
+      streamSetup.innerHTML = "";
+
+      var html = '';
+      var n = 0;
+      for(var stream_id in appState["rtmp_outputs"]) {
+        html += "<div id=\"" + stream_id + "\" class=\"output_stream_fields\">";
+        html += "<h3>Output Channel " + (n + 1) + "</h3>";
+        html += "<div class=\"h_form\">";
+        for(var service in appState["services"]) {
+          console.log("Service: " + service);
+          html += "<option value=\"" + service + "\">" + service + "</option>";
+        }
+        html += "</select>";
+        html += "<input type=\"text\" id=\"output_id_" + stream_id + "_url\" name=\"output_id_" + stream_id + "_url\" class=\"streaming_url\" placeholder=\"Streaming URL\" />";
+        html += "<input type=\"text\" id=\"output_id_" + stream_id + "_key\" name=\"output_id_" + stream_id + "_key\" class=\"streaming_key\" placeholder=\"Streaming Key\" />";
+        html += "<button id=\"output_stream_" +  stream_id + "_btn\" name=\"output_stream_" +  stream_id + "_btn\" class=\"streaming_button unsaved\" onclick=\"configStream(" + stream_id + ")\">Save</button>";
+        html += "</div></div>";
+
+        $('#stream_setup').append(html);
+        html = '';
+        n++;
+      }
+      if(n > 0) {
+        $("#profiles_loaded_chk").prop('checked', true);
+        streamSetup.hidden = false;
+      }
+    }
+
+    //Send the stream auth data to the device
+    function configStream(id) {
+      var stream = {};
+      stream["id"] = id;
+      stream["stream_key"] = $("#output_id_" + id + "_key").val();
+      stream["stream_url"] = $("#output_id_" + id + "_url").val();
+
+      $.ajax({
+        url: "/streams/" + id,
+        data: JSON.stringify(stream),
+        method: 'POST',
+        contentType: 'application/json',
+        processData: false,
+        success: function() {
+          streamReady = true;
+          //Change the stream save button to indicate it worked.
+          $('#output_stream_' + id + "_btn").removeClass("unsaved");
+          $('#output_stream_' + id + "_btn").addClass("stream-saved");
+          
+          //Change the big button to indicate it's ready to stream.
+          $("#go_live_button").removeClass("select-button-default");
+          $("#go_live_button").addClass("select-button-ready");
+          $("#stream_button_text").text("Ready!");
+        },
+        error: function(error) {
+          alert("Could not save stream data:\n\n" + JSON.stringify(error));
+        }
+      });
+    }
+
+    //The big red button
+    function goLive() {
+      if(!streamReady) {
+        alert("Please set up one or more output streams in order to go live.");
+        return false;
+      }
+
+      $.ajax({
+        url: "/golive/",
+        method: 'POST',
+        contentType: 'application/json',
+        processData: false,
+        success: function(data) {
+          // TODO: make this update based on the actual outputs statuses, rather than toggling and assuming all is working properly
+          if(isStreaming) {
+            if($("#go_live_button").hasClass("select-button-active")) {
+              $("#go_live_button").removeClass("select-button-active");
+              $("#go_live_button").addClass("select-button-ready");
+              $("#stream_button_text").text("Ready!");
+            }
+            isStreaming = false;
+          } else {
+            $("#go_live_button").removeClass("select-button-ready");
+            $("#go_live_button").addClass("select-button-active");
+            $("#stream_button_text").text("STREAMING\nLIVE");
+            isStreaming = true;
+          }
+        },
+        error: function(error) {
+          alert("An error occurred:\n\n" + JSON.stringify(error));
+        }
+      });
+    }
+
+    function submitPAT(token) {
+      var orgLabel = document.getElementById("org_label");
+      orgLabel.textContent = "Retrieving Organizations...";
+
+      $.ajax({
+        url: "/submitPAT/" + token,
+        method: 'POST',
+        contentType: 'application/json',
+        success: function(data) {
+          var orgSelect = document.getElementById("orgDropdown");
+
+          // Need to clear the dropdown and load in only the default selection
+          while (orgSelect.options.length > 0) {                
+            orgSelect.remove(0);
+          } 
+
+          defaultOrg = document.createElement("option");
+          defaultOrg.text = "Select an organization";
+          defaultOrg.setAttribute("selected", true);
+          defaultOrg.setAttribute("disabled", "diabled");
+          defaultOrg.setAttribute("hidden", "hidden");
+
+          orgSelect.add(defaultOrg);
+
+          var orgs = JSON.parse(data)["orgs"];
+          
+          for (var org in orgs) {
+            var newOrg = document.createElement("option");
+            newOrg.text = orgs[org].org_name;
+            newOrg.value = orgs[org].org_guid;
+            orgSelect.add(newOrg);
+          }
+          if (!orgSelect.options[1]) {
+            alert("No organizations found, check the entered Personal Access Token and that the associated account is part of an organization");
+            orgSelect.disabled = true;
+          } else {
+            // Sort the results
+            orgSelect.options = $("#orgDropdown").html($("#orgDropdown option").sort(function (a, b) {
+              return a.text == b.text ? 0 : a.text < b.text ? -1 : 1
+            }));
+            orgSelect.disabled = false;
+          }
+          orgLabel.textContent = "LiveEdge Cloud Organizations";
+        },
+        error: function(error) {
+          alert("An error occurred:\n\n" + JSON.stringify(error));
+        }
+      });
+    }
+
+    function getDevices(token, org_guid) {
+      var deviceLabel = document.getElementById("device_label");
+      deviceLabel.textContent = "Retrieving Devices...";
+
+      $.ajax({
+        url: "/getDevices/",
+        method: 'POST',
+        data: JSON.stringify({token: token, org_guid: org_guid}),
+        dataType: "json",
+        contentType: 'application/json',
+        success: function(data) {
+          var deviceSelect = document.getElementById("deviceDropdown");
+
+          // Need to clear the dropdown and load in only the default selection
+          while (deviceSelect.options.length > 0) {                
+            deviceSelect.remove(0);
+          } 
+
+          defaultDevice = document.createElement("option");
+          defaultDevice.text = "Select a device";
+          defaultDevice.setAttribute("selected", true);
+          defaultDevice.setAttribute("disabled", "diabled");
+          defaultDevice.setAttribute("hidden", "hidden");
+
+          deviceSelect.add(defaultDevice);
+
+          var deviceDiv = document.getElementById("device_select");
+          var devices = data["devices"];
+          for (var device in devices) {
+            var newDevice = document.createElement("option");
+            newDevice.text = devices[device].serial_number;
+            newDevice.value = devices[device].device_guid;
+            deviceSelect.add(newDevice);
+          }
+          if (!deviceSelect.options[1]) {
+            alert("No devices found, check that there are devices assigned to the selected organization");
+            deviceSelect.disabled = true;
+            document.getElementById("stream_setup").hidden = true;
+          } else {
+            // Sort the results
+            deviceSelect.options = $("#deviceDropdown").html($("#deviceDropdown option").sort(function (a, b) {
+              return a.text == b.text ? 0 : a.text < b.text ? -1 : 1
+            }));
+            deviceSelect.disabled = false;
+            setDeviceNames(token);
+          }
+          deviceLabel.textContent = "Devices";
+        },
+        error: function(error) {
+          alert("An error occurred:\n\n" + JSON.stringify(error));
+        }
+      });
+    }
+
+    function setDeviceNames(token) {
+      var devices = document.getElementById("deviceDropdown").options;
+
+      for (let i = 0; i < devices.length; i++) {
+        if (devices[i].text != "Select a device") {
+          $.ajax({
+            url: "/getDeviceSystemConfig/",
+            method: 'POST',
+            data: JSON.stringify({token: token, device_guid: devices[i].value}),
+            dataType: "json",
+            contentType: 'application/json',
+            success: function(data) {
+              devices[i].text = data["device_name"];
+            },
+            error: function(error) {
+              alert("An error occurred:\n\n" + JSON.stringify(error));
+            }
+          });
+        }
+      }
+    }
+
+    $( document ).ready( function() {
+      //Set up the default image on the preview
+      $('#prev_jpg').on("error", function() {
+        $(this).attr('src', '/static/images/tv-test-pattern.png');
+      });
+      $('#go_live_button').click(function() { goLive(); });
+      $('#submit-pat').click(function() { submitPAT($('#pat').val()); });
+      $('#orgDropdown').change(function() { getDevices($('#pat').val(), $('#orgDropdown option:selected').val()); });
+      $('#deviceDropdown').change(function() { loadState($('#pat').val(), $('#deviceDropdown option:selected').val()); });
+    });
+  </script>
+</body>

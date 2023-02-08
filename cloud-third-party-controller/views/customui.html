@@ -509,6 +509,20 @@ building library - is supported.
         contentType: 'application/json',
         success: function(data) {
           var deviceSelect = document.getElementById("deviceDropdown");
+
+          // Need to clear the dropdown and load in only the default selection
+          while (deviceSelect.options.length > 0) {                
+            deviceSelect.remove(0);
+          } 
+
+          defaultDevice = document.createElement("option");
+          defaultDevice.text = "Select a device";
+          defaultDevice.setAttribute("selected", true);
+          defaultDevice.setAttribute("disabled", "diabled");
+          defaultDevice.setAttribute("hidden", "hidden");
+
+          deviceSelect.add(defaultDevice);
+
           var deviceDiv = document.getElementById("device_select");
           var devices = data["devices"];
           for (var device in devices) {
@@ -521,6 +535,10 @@ building library - is supported.
             alert("No devices found, check that there are devices assigned to the selected organization");
             deviceSelect.disabled = true;
           } else {
+            // Sort the results
+            deviceSelect.options = $("#deviceDropdown").html($("#deviceDropdown option").sort(function (a, b) {
+              return a.text == b.text ? 0 : a.text < b.text ? -1 : 1
+            }));
             deviceSelect.disabled = false;
           }
           deviceLabel.textContent = "Devices";

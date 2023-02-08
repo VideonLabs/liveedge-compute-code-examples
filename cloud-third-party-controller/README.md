@@ -9,9 +9,9 @@ Documentation for LiveEdge Cloud can be found [here](https://support.videonlabs.
 ## videon_cloud_restful.py
 This is a library that can be used as it is by partners in their controller applications. See the code comments for the suggested usage of this library.
 ## customui.html
-This is the webpage that is hosted by the application and gathers user input to be passed to app.py. It primarily serves to demonstrate functionality and is, to a degree, intentionally not the most aesthetically pleasing as to discourage this example application from being used in production environments.
+This is the webpage that is hosted by the application and gathers user input to be passed to `app.py`. It primarily serves to demonstrate functionality and is, to a degree, intentionally not the most aesthetically pleasing as to discourage this example application from being used in production environments.
 ## app.py
-This is the backend application that processes the user input from customui.html and makes the requisite calls to the videon_cloud_restful.py library to interact with the LiveEdge Cloud API.
+This is the backend application that processes the user input from customui.html and makes the requisite calls to the `videon_cloud_restful.py` library to interact with the LiveEdge Cloud API.
 
 # How to run the app
 To run this example on your local device, you'll first need to [enroll your device in LiveEdge Cloud](https://support.videonlabs.com/hc/en-us/articles/6004577224979-How-to-use-LiveEdge-Cloud):

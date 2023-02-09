@@ -38,7 +38,7 @@ outputs_shadow = "Outputs"
 def get_token_expiriation(token):
     r = requests.get(cloud_api_url + cloud_personal_access_token_endpoint, headers={"Authorization":"PAT " + token})
     if r.status_code != requests.codes.ok:
-        sys.exit("Status code = " + str(r.status_code) + "/nMessage = " + str(json.loads(r.text)["message"]))
+        sys.exit("Status code = " + str(r.status_code) + "\nMessage = " + str(json.loads(r.text)["message"]))
     else:
         tokens = json.loads(r.text)["personal_access_tokens"]
         for token_found in tokens:
@@ -54,10 +54,10 @@ def get_token_expiriation(token):
 def get_organizations(token):
     r = requests.get(cloud_api_url + cloud_orgs_endpoint, headers={"Authorization":"PAT " + token})
     if r.status_code != requests.codes.ok:
-        sys.exit("Status code = " + str(r.status_code) + "/nMessage = " + str(json.loads(r.text)["message"]))
+        sys.exit("Status code = " + str(r.status_code) + "\nMessage = " + str(json.loads(r.text)["message"]))
     return r
 
-# Helper function to get a list of devices associated with and org GUID
+# Helper function to get a list of devices associated with an org GUID
 # This function expects a valid LiveEdge Cloud Personal Access Token and organization GUID
 #   and returns a list of devices associated with that organization that the user has access to
 # Constructed endpoint: https://api.videoncloud.com/v1/devices/
@@ -65,7 +65,7 @@ def get_devices(token, org_guid):
     payload = {"org_guid" : org_guid}
     r = requests.get(cloud_api_url + cloud_devices_endpoint, headers={"Authorization":"PAT " + token}, params=payload)
     if r.status_code != requests.codes.ok:
-        sys.exit("Status code = " + str(r.status_code) + "/nMessage = " + str(json.loads(r.text)["message"]))
+        sys.exit("Status code = " + str(r.status_code) + "\nMessage = " + str(json.loads(r.text)["message"]))
     return r
 
 # Helper function for getting device settings from the Cloud API

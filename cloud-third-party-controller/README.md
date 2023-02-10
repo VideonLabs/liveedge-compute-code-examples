@@ -7,7 +7,7 @@ Documentation for LiveEdge® CLOUD can be found [here](https://support.videonlab
 
 # How the app works
 ## videon_cloud_restful.py
-This is a library that can be used as it is by partners in their controller applications. See the code comments for the suggested usage of this library.
+This is a library that can be used as it is by partners in their controller applications. See the code comments for the suggested usage of this library. The library is not guaranteed to be comprehensive, but contains key helper functions to speed up third-party integration to the LiveEdge® CLOUD REST API.
 ## customui.html
 This is the webpage that is hosted by the application and gathers user input to be passed to `app.py`. It primarily serves to demonstrate functionality and is, to a degree, intentionally not the most aesthetically pleasing as to discourage this example application from being used in production environments.
 ## app.py

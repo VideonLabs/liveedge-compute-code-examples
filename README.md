@@ -1,6 +1,6 @@
-# LiveEdge&reg; Compute Examples
+# LiveEdge&reg; COMPUTE Examples
 
-The examples in this repository are intended to demonstrate the capabilities of the LiveEdge&reg; Compute platform, how it leverages Docker to ensure ease of deployment, and the flexibility it unlocks for your live streaming video workflows. 
+The examples in this repository are intended to demonstrate the capabilities of the Videon Compute platform and LiveEdge&reg;, how it leverages Docker to ensure ease of deployment, and the flexibility it unlocks for your live streaming video workflows. 
 
 We encourage you to explore the examples here and let us know if you have any questions.
 

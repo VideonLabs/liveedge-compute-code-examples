@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 
-# The LiveEdge Compute environment requires these user groups and permissions
+# The LiveEdge® Compute environment requires these user groups and permissions
 # in order to allow access to certain outside servers. 
 # These two lines *MUST* be included in your Dockerfile
 RUN groupadd -g 3003 aid_inet && usermod -G nogroup -g aid_inet _apt

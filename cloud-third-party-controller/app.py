@@ -47,7 +47,7 @@ def configStream(id, data):
     rtmp_url = data["stream_url"] + data["stream_key"]
 
     # For simplicity's sake, we'll just take the first audio and video encoder we find, there should always be one of each created by the Videon device
-    # TODO: Update this to load the YouTube audio encoder once LiveEdge Cloud supports adding encoders
+    # TODO: Update this to load the YouTube audio encoder once LiveEdge® CLOUD supports adding encoders
     audio_id = 0
     video_id = 0
     for encoder in currState["encoders"]:

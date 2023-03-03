@@ -27,7 +27,7 @@ Create a working directory in `/data/local/`:
 Clone this repository to a directory on your local machine, then use `adb` to copy the files to the working directory you created on the device:
 
 ```
-[Local Machine]: adb copy . /data/local/custom-ui
+[Local Machine]: adb push . /data/local/custom-ui
 ```
 
 Run the `docker build` command in the working directory:

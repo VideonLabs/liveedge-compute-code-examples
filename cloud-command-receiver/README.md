@@ -2,7 +2,7 @@
 
 This is a brief example of a Docker container to run on an EdgeCaster and recieve commands from LiveEdge Cloud
 
-In order to run this example, ensure that you have a Videon device enrolled in LiveEdge Cloud. This example also makes calls to the LiveEdge Cloud API "commands" endpoint: https://api.videoncloud.com/v1/openapi/html#operation/SendDeviceCommand
+In order to run this example, ensure that you have a Videon device enrolled in LiveEdge Cloud, updated to the latest Cloud Agent. This example also makes calls to the LiveEdge Cloud API "commands" endpoint: https://api.videoncloud.com/v1/openapi/html#operation/SendDeviceCommand
 
 Additionally, you will need to generate a Personal Access Token (PAT) in LiveEdge Cloud, under "Access Tokens": https://videoncloud.com/account
 
@@ -46,7 +46,7 @@ Upon a successful build, run the container in the background to see it in action
 [LiveEdge Compute Shell]: docker run -p8882:8882 --name cloud-receiver cloud-command-receiver &
 ```
 
-### Running the Example Tests
+# Running the Example Tests
 
 To run the tests, you will send API calls to LiveEdge Cloud, manually entering information into the bracketed ('{...}') spaces of user information.
 
@@ -62,7 +62,7 @@ curl -H "Authorization: PAT {YOUR_PAT}" https://api.videoncloud.com/v1/devices?o
 
 Copy the GUID of your device, then
 
-#### Get "Messages" Stored in Docker Container
+## Get "Messages" Stored in Docker Container
 
 ```
 curl -X POST -d '{ "command": "rest_direct_get", "rest_endpoint": ":8882/cloud-command"}' -H "Authorization: PAT {YOUR_PAT}" https://api.videoncloud.com/v1/devices/{YOUR_DEVICE_GUID}/commands
@@ -87,7 +87,7 @@ This should then return information from LiveEdge Cloud that contains the list o
 }
 ```
 
-#### Post a new "Message" to Docker Container
+## Post a new "Message" to Docker Container
 
 ```
 curl -X POST -d '{ "command": "rest_direct_post", "rest_endpoint": ":8882/cloud-command"}' -H "Authorization: PAT {YOUR_PAT}" https://api.videoncloud.com/v1/devices/{YOUR_DEVICE_GUID}/commands
@@ -108,7 +108,7 @@ This should then return information from LiveEdge Cloud that contains the list o
 }
 ```
 
-#### Put a new "Message" to message in Docker Container
+## Put a new "Message" to message in Docker Container
 
 ```
 curl -X POST -d '{ "command": "rest_direct_put", "rest_endpoint": ":8882/cloud-command", "data": {"id":1, "message":"First EDITED message"}}' -H "Authorization: PAT {YOUR_PAT}" https://api.videoncloud.com/v1/devices/{YOUR_DEVICE_GUID}/commands
@@ -129,7 +129,7 @@ This should then return information from LiveEdge Cloud that contains the list o
 }
 ```
 
-#### Delete a "Message" in Docker Container
+## Delete a "Message" in Docker Container
 
 ```
 curl -X POST -d '{ "command": "rest_direct_delete", "rest_endpoint": ":8882/cloud-command/1" }' -H "Authorization: PAT {YOUR_PAT}" https://api.videoncloud.com/v1/devices/{YOUR_DEVICE_GUID}/commands

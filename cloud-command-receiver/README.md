@@ -129,7 +129,7 @@ This should then return information from LiveEdge Cloud that contains the list o
 }
 ```
 
-#### Delete a "Message" in Docker Container (Not available in this example yet)
+#### Delete a "Message" in Docker Container
 
 ```
 curl -X POST -d '{ "command": "rest_direct_delete", "rest_endpoint": ":8882/cloud-command/1" }' -H "Authorization: PAT {YOUR_PAT}" https://api.videoncloud.com/v1/devices/{YOUR_DEVICE_GUID}/commands
@@ -144,5 +144,5 @@ curl -H "Authorization: PAT {YOUR_PAT}" https://api.videoncloud.com/v1/devices/{
 This should then return information from LiveEdge Cloud that contains the list of "Message" objects stored by the Docker container as the value for the "data" field:
 
 ```
-
+"Message with id of 1 deleted"
 ```

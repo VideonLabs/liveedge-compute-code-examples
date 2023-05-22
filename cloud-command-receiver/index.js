@@ -46,7 +46,7 @@ app.put('/cloud-command', function(req, res, next) {
         messages[index].message = updatedMessage;
         res.send(200, messages[index]);
     } else {
-        res.send(500, "Id #" + id + " not found \n" + JSON.stringify(req.body));
+        res.send(500, "Id #" + id + " not found");
     }
     next();
     return;
@@ -63,7 +63,7 @@ app.del('/cloud-command/:id', function(req, res, next) {
         messages.splice(index, 1);
         res.send(200, "Message with id of " + id + " deleted");
     } else {
-        res.send(500, "Id #" + id + " not found. Index = " + index);
+        res.send(500, "Id #" + id + " not found");
     }
     next();
     return;

@@ -7,9 +7,9 @@ RUN groupadd -g 3003 aid_inet && usermod -G nogroup -g aid_inet _apt
 RUN groupadd -g 3004 net_raw && usermod -G net_raw root
 
 # First, set up the main directory structure
-RUN mkdir /cloud-reciever
-COPY . /cloud-reciever
-WORKDIR /cloud-reciever
+RUN mkdir /cloud-receiver
+COPY . /cloud-receiver
+WORKDIR /cloud-receiver
 RUN rm -rf node_modules
 
 # Need to install SSH first

@@ -1,6 +1,6 @@
-# Cloud Command Reciever
+# Cloud Command Receiver
 
-This is a brief example of a Docker container to run on an EdgeCaster and recieve commands from LiveEdge Cloud
+This is a brief example of a Docker container to run on an EdgeCaster and receive commands from LiveEdge Cloud
 
 In order to run this example, ensure that you have a Videon device enrolled in LiveEdge Cloud, updated to the latest Cloud Agent. This example also makes calls to the LiveEdge Cloud API "commands" endpoint: https://api.videoncloud.com/v1/openapi/html#operation/SendDeviceCommand
 

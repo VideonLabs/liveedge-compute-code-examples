@@ -3,29 +3,49 @@
 # from the LiveEdge circular buffer and produce the clip
 # 
 
+VID="VID"                 # basename for "Filename" in the File Record settings
+PDT_OFFSET=-4             # number of seconds to offset if EXT-X-PDT isn't aligned
+RECORDINGS="/recordings"  # location of the video file recordings (in the container)
+
 if [ $# -ne 3 ]; then
     echo "Usage: $0 <file_output> <start_time> <stop_time>"
     exit 1
 fi
 
-if ! [ -d /recordings ]; then
+output_file="$1"
+
+if ! [ -d "$RECORDINGS" ]; then
    echo "LiveEdge recordings not accessible. Abort."
    exit 1
 fi
 
-cd /recordings
-VID="VID" # basename for "Filename" in the File Record settings
-
-output_file="$1"
+cd "$RECORDINGS"
 
 if [ -f "$output_file" ]; then
     echo "Destination file "$1" exists, skipping."
     exit 0
 fi
 
-# Remove human-readable date formats
-start_time=$(echo "$2" | sed -n 's/_//p')
-stop_time=$(echo "$3" | sed -n 's/_//p')
+function real_date() {
+    tm=$(echo "$1" | sed -n 's/_//p')
+    if [[ $(uname) == "Darwin" ]]; then
+        etm=$(date -jf "%Y%m%d%H%M%S" "$tm" "+%s" 2>/dev/null)
+        ctm=$((etm + PDT_OFFSET))
+        otm=$(date -ujf "%s" "$ctm" "+%Y%m%d%H%M%S" 2>/dev/null)
+    else
+        itm="${tm:0:8} ${tm:8:2}:${tm:10:2}:${tm:12:2}"
+        etm=$(date -d "$itm" +"%s" 2>/dev/null)
+        ctm=$((etm + PDT_OFFSET))
+        otm=$(date -ud @"$ctm" +"%Y%m%d%H%M%S" 2>/dev/null)
+    fi
+    echo "$otm"
+}
+
+# Remove human-readable date formats, adjust with regards to EXT-X-PDT if needed
+start_time=$(real_date "$2")
+stop_time=$(real_date "$3")
+
+echo "Request received to cut from UTC $start_time to $stop_time into $output_file"
 
 function calculate_offset() {
     if [ $# -ne 2 ]; then
@@ -112,7 +132,7 @@ start_offset=$(calculate_offset "$start_time" "$begin_time")
 stop_offset=$(calculate_offset "$stop_time" "$start_time")
 stop_offset=$((start_offset + stop_offset))
 
-echo "Offets:"
+echo "Offets for file cutting:"
 echo " > start: $start_offset"
 echo " > stop: $stop_offset"
 
@@ -122,4 +142,5 @@ ffmpeg -i TMP_"$output_file"_concatenated.ts -ss "$start_offset" -to "$stop_offs
 # Clean up temporary files
 rm -f "$tmp_list_file" TMP_"$output_file"_concatenated.ts
 
-echo "Clipped  video created as $output_file"
+echo "Clipped video saved as $output_file"
+# Then you can fetch the video clip from /recordings, or push it to FTP, S3, etc.

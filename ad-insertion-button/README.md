@@ -4,9 +4,9 @@ This example functions to auto-detect a USB keyboard (or USB device that can sig
 
 ## How to Build and Run This Example
 
-[Click here for details on running Docker containers on the EdgeCaster.](https://support.videonlabs.com/hc/en-us/articles/4408583092115-Using-Docker-with-LiveEdge-Compute)
+[Click here for details on running Docker containers on the LiveEdge Node.](https://support.videonlabs.com/hc/en-us/articles/4408583092115-Using-Docker-with-LiveEdge-Compute)
 
-This code requires that a physical device emulating a USB keyboard be connected to the USB port on your EdgeCaster device. A simple USB keyboard should work fine and **is best to connect before running the Docker container**.
+This code requires that a physical device emulating a USB keyboard be connected to the USB port on your LiveEdge Node device. A simple USB keyboard should work fine and **is best to connect before running the Docker container**.
 
 Clone this repository to your local machine, use `adb` to access your LiveEdge Compute environment, create a directory under '/data/local/' to store this code, then use `adb push` to copy the files to the directory you just created.
 

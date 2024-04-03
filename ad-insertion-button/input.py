@@ -1,3 +1,15 @@
+#!/usr/bin/env python3
+#
+# USB Button to Ad Insertion App
+#
+# Gather USB button signals and translate to SCTE35 ad insertion markers
+#
+# Procedure:
+#   1.  Detect and connect to 5-key or 1-key USB devices
+#   2.  Detect and setup SCTE35 data encoder on a local Videon
+#   3.  Wait for button presses and translate to appropriate SCTE35 event
+#
+
 import evdev
 import struct
 import requests
@@ -20,7 +32,6 @@ scte_id = ''
 scte_obj = ''
 
 
-
 # Helper function for GETting API endpoints
 def get_json(url):
     r = requests.get(url)
@@ -35,7 +46,7 @@ def handleResponse(response):
     # Only reports an error if we get anything other than an OK error.
     ret = False
     if((int(response.status_code/100) % 10) != 2):
-        ret = {"err_code": req.status_code, "err_message": req.reason + '; ' + req.text}
+        ret = {"err_code": response.status_code, "err_message": response.reason + '; ' + response.text}
     return ret
 
 def setupScte(device_ip, duration):
@@ -69,7 +80,11 @@ def setupScte(device_ip, duration):
 	del scte_obj["seconds_in_status"]
 	del scte_obj["data_encoder_id"]
 	scte_obj["name"] = "Insertion-Button"
+	#del scte_obj["in_channel_in"]
+	scte_obj["active"] = True
 
+	print("SCTE ID: " + str(scte_id))
+	
 	# Update the duration to match our duration
 	scte_obj["codec"]["scte35"]["splice_duration"] = duration * 1000
 	tmpUrl = 'http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scte_id)
@@ -81,13 +96,25 @@ def setupScte(device_ip, duration):
 		print("Data: \n" + json.dumps(scte_obj))
 	return scte_id
 
-
+def scte_insert(device_ip, duration=120*1000):
+    # Splice Insert with a preroll of 0 seconds and duration of 30 seconds (will be changed in the code)
+	splice = {"splice_command":{"value":"splice_insert","splice_insert":{"preroll_time_msec":0,"duration_msec":30000}}}
+	splice["splice_command"]["splice_insert"]["duration_msec"] = duration
+	#splice["splice_command"]["splice_insert"]["active"] = "true"
+	req = requests.post('http://' + device_ip + ':2020/v2/encoders/data_encoders/' + str(scteID) + '/splice_commands', headers={"Content-Type": "application/json"}, json=splice)
+	print(req)
+	err = handleResponse(req)
+	if(err != False):
+		print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
+		exit
 
 scteID = setupScte(device_ip, duration)
 
 #Detect the usb device so that we can recognize key presses
 devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
+
 for device in devices:
+
 	if "usb" in str(device.phys):
 
 		if "input0" in str(device.phys):
@@ -98,7 +125,7 @@ for device in devices:
 
 dev = InputDevice(keyEventPath)
 
-print(dev)
+print(dev)	
 
 # Splice Insert with a preroll of 0 seconds and duration of 30 seconds (This is changed depending on button press)
 splice = {"splice_command":{"value":"splice_insert","splice_insert":{"preroll_time_msec":0,"duration_msec":30000}}}
@@ -110,8 +137,16 @@ time_signal_end = {"splice_command":{"value":"time_signal","time_signal":{"prero
 for event in dev.read_loop():
 	if event.type == ecodes.EV_KEY:
 		keyEvent = str(categorize(event))
+		
+		print(keyEvent)
 
-        #Insert SCTE marker of 120 second duration
+		#Insert SCTE marker of 120 second duration
+		if "(KEY_KP1), up" in keyEvent:
+			print("Key 1 Hit! 120 second Ad Break!!")
+			duration= 120*1000
+			scte_insert(device_ip, duration)
+
+		#Insert SCTE marker of 120 second duration
 		if "(KEY_1), up" in keyEvent:
 			print("Key 1 Hit! 120 second Ad Break!!")
 			duration= 120*1000

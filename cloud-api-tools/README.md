@@ -37,4 +37,4 @@ python3 remote_set_html5_url.py -p [personal_access_token] -d [device_guid] -u [
 * FPS must be a value between 1-4
 
 "Interactive" is utilized by not passing any arguments and following the prompts, entering in the requested information.
-* If using interactive mode to replace a current URL, the URL must first be removed via the script option, then the new URL may be set via that script option
+* If using interactive mode to replace a current URL, the URL must first be removed via the prompt option, then the new URL may be set via that respective prompt option

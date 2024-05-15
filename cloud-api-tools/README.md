@@ -2,7 +2,7 @@
 
 The following scripts serve as examples and starting points when using the LiveEdge Cloud API:
 * videon_cloud_restful.py - Helper script that allows calling functions to make API calls, rather than having to construct them from scratch
-* * This script does not contain all LiveEdge Cloud API calls, but contains many that cen be used as examples if others not in the collection are needed
+* * This script does not contain all LiveEdge Cloud API calls, but contains many that can be used as examples if others not in the collection are needed
 * install_html5.py - A script that installs Videon's HTML5 graphic overlay rendering container
 * remote_set_html5_url.py - A script that sets the URL for the HTML5 graphic overlay rendering container to pull from
 

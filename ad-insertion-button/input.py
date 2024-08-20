@@ -106,7 +106,6 @@ def scte_insert(device_ip, duration=120*1000):
 	err = handleResponse(req)
 	if(err != False):
 		print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
-		exit
 
 scteID = setupScte(device_ip, duration)
 
@@ -156,7 +155,6 @@ for event in dev.read_loop():
 			err = handleResponse(req)
 			if(err != False):
 				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
-				exit
 
         #Insert SCTE marker of 30 second duration
 		if "(KEY_2), up" in keyEvent:
@@ -168,7 +166,6 @@ for event in dev.read_loop():
 			err = handleResponse(req)
 			if(err != False):
 				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
-				exit
 
         #Insert SCTE Time Signal Start 
 		if "(KEY_3), up" in keyEvent:
@@ -178,7 +175,6 @@ for event in dev.read_loop():
 			err = handleResponse(req)
 			if(err != False):
 				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
-				exit
 
         #Insert SCTE Time Signal End
 		if "(KEY_4), up" in keyEvent:
@@ -188,7 +184,6 @@ for event in dev.read_loop():
 			err = handleResponse(req)
 			if(err != False):
 				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
-				exit
 
         #Initiate interrupt of ALL SPLICE COMMANDS
 		if "(KEY_5), up" in keyEvent:
@@ -198,4 +193,3 @@ for event in dev.read_loop():
 			err = handleResponse(req)
 			if(err != False):
 				print("Error setting splice: " + str(err["err_code"]) + ': ' + err["err_message"])
-				exit

@@ -19,7 +19,7 @@ docker build -t scte35 .
 You will need to provide privileged access to the container when you run it so it may access the host environment's devices that will be auto-detected:
 
 ```
-docker run -d --restart unless-stopped --name scte35 --privileged -v "$PWD":/usr/src/myapp -w /usr/src/myapp scte35 python input.py
+docker run -d --restart unless-stopped --name scte35 --privileged scte35
 ```
 The mapped key presses are detailed below:
 * The "1" key will make a REST API call to the host Videon device to insert a SCTE-35 splice marker with duration of 120 seconds, Pre-roll of 0.

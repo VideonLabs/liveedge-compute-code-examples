@@ -17,4 +17,6 @@ RUN apt-get install -y python3 pip vim
 # Install all of our Python dependencies
 RUN pip install -r ./requirements.txt
 
-CMD python3 input.py
+ENV PYTHONUNBUFFERED=1
+
+CMD python3 -u input.py

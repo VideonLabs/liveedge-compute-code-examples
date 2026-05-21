@@ -1,7 +1,29 @@
-# LiveEdge&reg; COMPUTE Examples
+# ⚠️ Deprecated Repository
 
-The examples in this repository are intended to demonstrate the capabilities of the Videon Compute platform and LiveEdge&reg;, how it leverages Docker to ensure ease of deployment, and the flexibility it unlocks for your live streaming video workflows. 
+This repository is **no longer actively maintained** and contains outdated and unsupported code.
 
-All the code available on this Github repository is given "as is" and is not meant to be used in production. We encourage you to explore the examples here and let us know if you have any questions. 
+> 🚫 No updates, fixes, or support will be provided for this repository.
 
-**Note:** We continuously add to and update these examples. Be sure to check back frequently. If there is an example you'd like to see here, please reach out to your Videon representative. 
+---
+
+## 📢 Where to Go Instead
+
+Please visit the **LiveEdge Resource Center** for current documentation, supported tools, and future updates:
+
+- 🌐 **Main Resource Center**  
+  https://support.videonlabs.com/hc
+
+- 🧰 **LiveEdge Developer Toolkit**  
+  https://support.videonlabs.com/hc/en-us/categories/20959293934867-LiveEdge-Developer-Toolkit
+
+---
+
+## 📦 Future Updates
+
+All future releases, updates, and supported materials are published exclusively in the LiveEdge Resource Center.
+
+---
+
+## ❗ Important Note
+
+This repository is retained for archival purposes only. Use of its contents is at your own risk.
